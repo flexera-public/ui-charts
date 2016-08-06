@@ -1,0 +1,48 @@
+{
+  "name": "ui-charts",
+  "version": "1.0.0",
+  "description": "Renders time series as graphs for Angular",
+  "main": "index.js",
+  "dependencies": {
+    "lodash": "^4.14.1",
+    "ui-angular-decorators": "github:rightscale/ui-angular-decorators"
+  },
+  "devDependencies": {
+    "angular": "^1.5.8",
+    "angular-mocks": "^1.5.8",
+    "angular-ui-router": "^0.3.1",
+    "babel-preset-es2015-rollup": "^1.1.1",
+    "browser-sync": "^2.13.0",
+    "del": "^2.2.1",
+    "designkit-colors": "0.0.8",
+    "designkit-global": "0.0.3",
+    "designkit-typography": "0.0.9",
+    "gulp": "^3.9.1",
+    "gulp-angular-templatecache": "^2.0.0",
+    "gulp-htmlhint": "^0.3.1",
+    "gulp-htmlmin": "^2.0.0",
+    "gulp-inject": "^4.1.0",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-svgmin": "^1.2.2",
+    "gulp-watch": "^4.3.9",
+    "jasmine-core": "^2.4.1",
+    "karma": "^1.1.2",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-jasmine": "^1.0.2",
+    "karma-mocha-reporter": "^2.1.0",
+    "karma-phantomjs-launcher": "^1.0.1",
+    "rollup": "^0.34.1",
+    "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-commonjs": "^3.3.1",
+    "rollup-plugin-node-resolve": "^1.7.2",
+    "rollup-plugin-typescript": "^0.7.7",
+    "rollup-watch": "^2.5.0",
+    "typescript": "^2.0.0"
+  },
+  "scripts": {
+    "test": "gulp spec"
+  },
+  "author": "RightScale, André Rieussec",
+  "license": "MIT"
+}

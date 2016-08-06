@@ -1,0 +1,19 @@
+<div class="layout-root">
+  <div class="layout-header">
+    <div class="logo" ng-include="'img/main-logo.svg'"></div>
+    <span>Graphs Demo</span>
+  </div>
+  <div class="layout-main">
+    <div class="layout-sidebar">
+      <ul>
+        <li ng-repeat="state in $ctrl.states" ui-sref-active="active">
+          <a ui-sref="{{state.name}}">
+          {{:: state.data.label }}
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="layout-content" ui-view>
+    </div>
+  </div>
+</div>
