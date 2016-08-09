@@ -8,12 +8,19 @@ type CallbackInfo = {
 
 type Subscription = {
   callbacks: CallbackInfo[]
+  span: number
   metric: MetricInfo
   provider: MetricsProvider
 }
 
 export type MetricCallback = (data: SeriesData) => void
-export type DataPoints = { [timestamp: number]: number }
+export type DataPoints = {
+  [timestamp: string]: {
+    avg: number
+    min: number
+    max: number
+  }
+}
 
 export interface SeriesData {
   readonly error?: string
@@ -94,6 +101,8 @@ export class GraphData {
     var metric = this.allMetrics[metricId];
     if (!metric) throw `Cloud not find a metric with id [${metricId}]`
 
+    if (span <= 0) throw 'The span parameter needs to be a positive number greater than 0'
+
     var subscription = this.subscriptions[metricId];
     if (!subscription) {
       subscription = {
@@ -101,6 +110,7 @@ export class GraphData {
           span: span,
           callback: callback
         }],
+        span: 0,
         metric: metric.metric,
         provider: metric.provider
       }
@@ -108,6 +118,10 @@ export class GraphData {
       this.refreshSubscription(subscription)
     }
     else {
+      if (_.some(subscription.callbacks, c => c.callback == callback)) {
+        throw 'The callback has already been registered for this metric'
+      }
+
       subscription.callbacks.push({
         span: span,
         callback: callback
@@ -151,9 +165,12 @@ export class GraphData {
   }
 
   private refreshSubscription(subscription: Subscription) {
+    var max = _(subscription.callbacks).map(c => c.span).max()
+    if (subscription.span >= max) return
+    subscription.span = max
     subscription.provider.subscribe(
       subscription.metric,
-      _(subscription.callbacks).map(c => c.span).max(),
+      max,
       data => this.dispatch(data, subscription.callbacks)
     )
   }
@@ -165,7 +182,7 @@ export class GraphData {
     else {
       subscribers.forEach(s => {
         var limit = now - s.span
-        s.callback({ points: _.filter(data.points, (v: number, k: number) => k >= limit) })
+        s.callback({ points: <DataPoints>_.pickBy(data.points, (v, k) => parseInt(k) >= limit) })
       })
     }
   }

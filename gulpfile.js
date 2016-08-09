@@ -52,7 +52,8 @@ function compile(source, destination) {
       }),
       babel({
         exclude: 'node_modules/**/*.js',
-        presets: ["es2015-rollup"]
+        presets: [["es2015", { modules: false }]],
+        plugins: ["external-helpers"]
       }),
       commonjs({
         include: 'node_modules/**'
