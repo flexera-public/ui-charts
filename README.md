@@ -6,11 +6,11 @@ Renders time series as charts for Angular
 
 Install it from npm:
 
-    npm i ui-charts
+    npm i @rightscale/ui-charts
 
 In your application, import the library in your `index.ts` to make it available globally
 
-    import 'ui-charts'
+    import '@rightscale/ui-charts'
 
 Add a reference to the library's module in the Angular module definition for your app:
 
@@ -18,7 +18,7 @@ Add a reference to the library's module in the Angular module definition for you
 
 In your SCSS stylesheet, import the library's stylesheet if present:
 
-    @import '../node_modules/ui-charts/styles.scss';
+    @import '../node_modules/@rightscale/ui-charts/styles.scss';
 
 ## Contributing
 
@@ -57,7 +57,7 @@ the library available:
 
 Then you can use this copy from the dependent package using
 
-    npm link ui-charts
+    npm link @rightscale/ui-charts
 
 Finally, you can watch for file changes in the library so the image and template files are automatically
 rebuilt:

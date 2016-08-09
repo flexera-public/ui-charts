@@ -1,11 +1,11 @@
 {
-  "name": "ui-charts",
-  "version": "1.0.0",
+  "name": "@rightscale/ui-charts",
+  "version": "0.0.1",
   "description": "Renders time series as graphs for Angular",
   "main": "index.js",
   "dependencies": {
-    "lodash": "^4.14.1",
-    "ui-angular-decorators": "github:rightscale/ui-angular-decorators"
+    "@rightscale/ui-angular-decorators": "^0.0.2",
+    "lodash": "^4.14.1"
   },
   "devDependencies": {
     "angular": "^1.5.8",
