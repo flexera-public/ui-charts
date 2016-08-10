@@ -16,10 +16,10 @@ export interface MetricDetails {
   bindings: {
     metricIds: '<',
     span: '=',
-    end: '?='
+    end: '='
   }
 })
-@inject([Data.GraphData, '$scope'])
+@lib.inject([Data.GraphData, '$scope'])
 export class ChartComponent {
   public metricIds: number[]
   public span: number
@@ -34,9 +34,9 @@ export class ChartComponent {
     private graphData: Data.GraphData,
     $scope: ng.IScope
   ) {
-    this.metrics = graphData.getMetrics()
-    $scope.$watchCollection(() => [this.metricIds, this.span, this.end], () => this.refreshSubscriptions)
-    $scope.$on('$destory', () => this.unsubscribe())
+    $scope.$watch(() => [this.metricIds, this.span, this.end], () => this.refreshSubscriptions(), true)
+
+    $scope.$on('$destroy', () => this.unsubscribe())
   }
 
   private unsubscribe() {
@@ -49,10 +49,11 @@ export class ChartComponent {
   private refreshSubscriptions() {
     this.unsubscribe()
     this.details = []
+    if (!this.metricIds) return
 
     this.metricIds.forEach(id => {
-      let metricInfo = this.metrics.find(m => m.id == id)
-
+      let metricInfo = this.graphData.getMetrics().find(m => m.id == id)
+      if (!metricInfo) throw `Cannot find metric with id [${id}]`
       let details: MetricDetails = {
         id: id,
         name: metricInfo.name
@@ -66,6 +67,8 @@ export class ChartComponent {
         }
       }
       this.subscriptions.push(subscription)
+
+      this.graphData.subscribe(id, this.span, subscription.callback)
     })
   }
 }

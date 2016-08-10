@@ -1,13 +1,14 @@
 import app from './app'
 import LayoutController from './layout/layout.controller'
+import {ChartController} from './chart/chart.controller'
 
-app.config((
-  $stateProvider: ng.ui.IStateProvider,
-  $urlRouterProvider: ng.ui.IUrlRouterProvider
+app.config(['$stateProvider', '$urlRouterProvider'], (
+  stateProvider: ng.ui.IStateProvider,
+  urlRouterProvider: ng.ui.IUrlRouterProvider
 ) => {
-  $urlRouterProvider.otherwise('/');
+  urlRouterProvider.otherwise('/');
 
-  $stateProvider
+  stateProvider
     .state('layout', {
       abstract: true,
       templateUrl: 'layout/layout.html',
@@ -20,5 +21,14 @@ app.config((
       data: {
         label: 'Home'
       }
-    });
+    })
+    .state('layout.chart', {
+      url: '/chart',
+      templateUrl: 'chart/chart.html',
+      controller: ChartController,
+      controllerAs: '$ctrl',
+      data: {
+        label: 'Chart Directive'
+      }
+    })
 });

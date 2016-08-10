@@ -23,10 +23,15 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
     }
   ]
 
+  points: { [metric: string]: Charts.Data.DataPoints } = {}
+
   constructor(
     private $q: ng.IQService,
     private $interval: ng.IIntervalService
   ) {
+    this.dummyMetrics.forEach(m => {
+      this.points[m.name] = this.buildPoints()
+    })
   }
 
   metrics() {
@@ -39,14 +44,16 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
       this.timerHandler = this.$interval(() => {
         this.dummyMetrics.forEach(m => {
           if (m.listener) {
-
+            console.log(`updating ${m.name}`)
+            this.points[metric.name] = [_.merge({ timestamp: Date.now() }, this.newPoint())].concat(this.points[metric.name].slice(0, this.points[metric.name].length))
             m.listener({
-              points: this.buildPoints()
+              points: this.points[metric.name]
             })
           }
         })
-      }, 5)
+      }, 2000)
     }
+    listener({ points: this.points[metric.name] })
   }
 
   unsubscribe(metric: Charts.Data.MetricInfo) {
@@ -55,20 +62,25 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
 
   getPoints(metric: Charts.Data.MetricInfo, start: number, finish: number): ng.IPromise<Charts.Data.SeriesData> {
     return this.$q.resolve({
-      points: this.buildPoints()
+      points: this.points[metric.name]
     })
   }
 
+  private newPoint() {
+    var avg = 1 + Math.random() * 10
+    return {
+      avg: avg,
+      min: avg - Math.random(),
+      max: avg + Math.random()
+    }
+  }
+
   private buildPoints() {
-    var points: Charts.Data.DataPoints = {}
+    var points: Charts.Data.DataPoints = []
     var now = Date.now()
 
     for (var i = 0; i < 20; i++) {
-      points[now - i * 10000] = {
-        avg: Math.random() * 10,
-        max: Math.random() * 10,
-        min: Math.random() * 10
-      }
+      points.push(_.merge({ timestamp: now - i * 2000 }, this.newPoint()))
     }
 
     return points

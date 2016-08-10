@@ -15,12 +15,11 @@ type Subscription = {
 
 export type MetricCallback = (data: SeriesData) => void
 export type DataPoints = {
-  [timestamp: string]: {
-    avg: number
-    min: number
-    max: number
-  }
-}
+  timestamp: number
+  avg: number
+  min: number
+  max: number
+}[]
 
 export interface SeriesData {
   readonly error?: string
@@ -143,6 +142,7 @@ export class GraphData {
     _.remove(subscription.callbacks, c => c.callback == callback)
     if (subscription.callbacks.length == 0) {
       subscription.provider.unsubscribe(subscription.metric)
+      delete this.subscriptions[metricId]
     }
     else {
       this.refreshSubscription(subscription);
@@ -182,7 +182,7 @@ export class GraphData {
     else {
       subscribers.forEach(s => {
         var limit = now - s.span
-        s.callback({ points: <DataPoints>_.pickBy(data.points, (v, k) => parseInt(k) >= limit) })
+        s.callback({ points: _.filter(data.points, p => p.timestamp >= limit)})
       })
     }
   }

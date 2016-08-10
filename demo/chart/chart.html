@@ -1,0 +1,14 @@
+<div>
+  <label>View last </label>
+  <select ng-model="$ctrl.spanStr">
+    <option value="5000">5s</option>
+    <option value="10000">10s</option>
+    <option value="20000">20s</option>
+  </select>
+</div>
+<div>
+  <label><input type="checkbox" ng-model="$ctrl.metric1"> First Metric</label>
+  <label><input type="checkbox" ng-model="$ctrl.metric2"> Second Metric</label>
+</div>
+
+<rs-chart metric-ids="$ctrl.metrics" span="$ctrl.span"><rs-table-renderer></rs-table-renderer></rs-chart>

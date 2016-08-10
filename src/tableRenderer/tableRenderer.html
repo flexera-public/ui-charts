@@ -1,0 +1,19 @@
+<div ng-repeat="metric in $ctrl.chart.details">
+  {{ metric.name }}
+
+  <table>
+    <tr>
+      <th>time</th>
+      <th>mix</th>
+      <th>max</th>
+      <th>avg</th>
+    </tr>
+    <tr ng-repeat="point in metric.points">
+      <td>{{point.timestamp | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+      <td>{{point.min}}</td>
+      <td>{{point.max}}</td>
+      <td>{{point.avg}}</td>
+    </tr>
+  </table>
+</div>
+
