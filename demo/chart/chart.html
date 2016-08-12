@@ -1,15 +1,22 @@
 <div layout="column" layout-margin>
   <h3>Chart settings</h3>
   <div layout layout-margin>
-    <label for="span-selector"><b>Time Span:</b></label>
-    <select ng-model="$ctrl.chartOptions.span" id="span-selector" ng-options="k for (k,v) in $ctrl.timeSpans"></select>
-  </div>
-  <div layout layout-margin>
     <b>Select metrics:</b>
     <label ng-repeat="metric in $ctrl.availableMetrics">
       <input type="checkbox" ng-click="$ctrl.toggleMetric(metric)">
       {{:: metric.name }}
     </label>
+  </div>
+  <div layout layout-margin>
+    <label for="span-selector"><b>Time Span:</b></label>
+    <select ng-model="$ctrl.chartOptions.span" id="span-selector" ng-options="k for (k,v) in $ctrl.timeSpans"></select>
+  </div>
+  <div layout layout-margin>
+    <label for="from-selector"><b>Starting From:</b></label>
+    <select ng-model="$ctrl.chartOptions.from" id="from-selector" ng-options="k for (k,v) in $ctrl.startingPoints"></select>
+  </div>
+  <div layout layout-margin>
+    <label><input type="checkbox" ng-model="$ctrl.chartOptions.paused"><b>Pause</b></label>
   </div>
 
   <h3 ng-if="$ctrl.chartOptions.metricIds.length">Sample chart using the table renderer:</h3>

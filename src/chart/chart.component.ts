@@ -79,8 +79,9 @@ export class ChartComponent {
    */
   private refreshSubscriptions() {
     this.unsubscribe()
+    if (!this.validateOptions() || this.options.paused) return
+
     this.details = []
-    if (!this.validateOptions()) return
 
     var availableMetrics = this.graphData.getMetrics()
 

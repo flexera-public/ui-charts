@@ -186,7 +186,7 @@ export class GraphData {
     else {
       subscribers.forEach(s => {
         let from = now - s.from
-        let to = now - s.span
+        let to = from - s.span
         s.callback({ points: _.filter(data.points, p => p.timestamp <= from && p.timestamp >= to)})
       })
     }

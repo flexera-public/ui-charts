@@ -6,3 +6,5 @@ import './routes'
 import '../.tmp/build/images'
 import '../.tmp/build/templates'
 import '../index'
+
+import './chart/chart.config'
