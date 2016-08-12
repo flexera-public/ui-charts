@@ -1,3 +1,6 @@
+@import "../node_modules/designkit-layout/src/scss/designkit-layout";
+
 /* inject:imports */
 @import "./src/chart/_chart.scss";
+@import "./src/tableRenderer/_tableRenderer.scss";
 /* endinject */

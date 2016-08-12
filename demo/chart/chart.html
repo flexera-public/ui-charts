@@ -1,14 +1,17 @@
-<div>
-  <label>View last </label>
-  <select ng-model="$ctrl.spanStr">
-    <option value="5000">5s</option>
-    <option value="10000">10s</option>
-    <option value="20000">20s</option>
-  </select>
-</div>
-<div>
-  <label><input type="checkbox" ng-model="$ctrl.metric1"> First Metric</label>
-  <label><input type="checkbox" ng-model="$ctrl.metric2"> Second Metric</label>
-</div>
+<div layout="column" layout-margin>
+  <h3>Chart settings</h3>
+  <div layout layout-margin>
+    <label for="span-selector"><b>Time Span:</b></label>
+    <select ng-model="$ctrl.chartOptions.span" id="span-selector" ng-options="k for (k,v) in $ctrl.timeSpans"></select>
+  </div>
+  <div layout layout-margin>
+    <b>Select metrics:</b>
+    <label ng-repeat="metric in $ctrl.availableMetrics">
+      <input type="checkbox" ng-click="$ctrl.toggleMetric(metric)">
+      {{:: metric.name }}
+    </label>
+  </div>
 
-<rs-chart metric-ids="$ctrl.metrics" span="$ctrl.span"><rs-table-renderer></rs-table-renderer></rs-chart>
+  <h3 ng-if="$ctrl.chartOptions.metricIds.length">Sample chart using the table renderer:</h3>
+  <rs-chart options="$ctrl.chartOptions"><rs-table-renderer></rs-table-renderer></rs-chart>
+</div>
