@@ -10,3 +10,4 @@ gulpfile.jshintrc
 karma.conf.jshintrc
 tsconfig.json
 typings.json
+coverage/

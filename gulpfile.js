@@ -37,39 +37,48 @@ var htmlMinOptions = {
 
 // Compiles and bundles TypeScript to JavaScript
 function compile(source, destination) {
+  var plugins = [
+    typescript({
+      target: 'ES6',
+      module: 'es2015',
+      moduleResolution: 'node',
+      emitDecoratorMetadata: true,
+      experimentalDecorators: true,
+      noImplicitAny: true,
+      removeComments: true,
+      typescript: require('typescript')
+    }),
+    babel({
+      exclude: 'node_modules/**/*.js',
+      presets: [["es2015", { modules: false }]],
+      plugins: ["external-helpers"]
+    }),
+    commonjs({
+      include: 'node_modules/**'
+    }),
+    nodeResolve({
+      jsnext: true,
+      main: true,
+      browser: true,
+      extensions: ['.js', '.ts', '.json'],
+      preferBuiltins: false
+    })
+  ];
+
+  if (process.argv[2].indexOf('spec') >= 0) {
+    plugins.push(require('rollup-plugin-istanbul')({
+      include: 'src/**/*',
+      exclude: ['**/*.spec.ts', '**/fixtures/**/*']
+    }));
+  }
+
   return rollup.rollup({
     entry: source,
-    plugins: [
-      typescript({
-        target: 'ES6',
-        module: 'es2015',
-        moduleResolution: 'node',
-        emitDecoratorMetadata: true,
-        experimentalDecorators: true,
-        noImplicitAny: true,
-        removeComments: true,
-        typescript: require('typescript')
-      }),
-      babel({
-        exclude: 'node_modules/**/*.js',
-        presets: [["es2015", { modules: false }]],
-        plugins: ["external-helpers"]
-      }),
-      commonjs({
-        include: 'node_modules/**'
-      }),
-      nodeResolve({
-        jsnext: true,
-        main: true,
-        browser: true,
-        extensions: ['.js', '.ts', '.json'],
-        preferBuiltins: false
-      })
-    ],
-    sourceMap: true
+    plugins: plugins,
+    sourceMap: (process.argv[2].indexOf('spec') >= 0) ? 'inline' : true
   }).then(bundle => {
     return bundle.write({ dest: destination });
-  })
+  });
 }
 
 /**********************************************************************
