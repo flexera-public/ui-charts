@@ -103,6 +103,7 @@ export class GraphData {
     if (!metric) throw `Cloud not find a metric with id [${metricId}]`
 
     if (span <= 0) throw 'The span parameter needs to be a positive number greater than 0'
+    if (from < 0) throw 'The from parameter needs to be a positive number'
 
     var subscription = this.subscriptions[metricId];
     if (!subscription) {

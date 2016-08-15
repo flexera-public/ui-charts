@@ -69,23 +69,31 @@ describe(Data.GraphData.name, () => {
     })
 
     it('should throw an error if subscribing to a non-existent metric', () => {
-      expect(() => { graphData.subscribe(5, 10, data => { }) }).toThrow('Cloud not find a metric with id [5]')
+      expect(() => { graphData.subscribe(5, 0, 10, data => { }) })
+        .toThrow('Cloud not find a metric with id [5]')
     })
 
-    it('should throw an error if ths span is 0 or less', () => {
-      expect(() => { graphData.subscribe(0, 0, data => { }) }).toThrow('The span parameter needs to be a positive number greater than 0')
+    it('should throw an error if the span is 0 or less', () => {
+      expect(() => { graphData.subscribe(0, 0, 0, data => { }) })
+        .toThrow('The span parameter needs to be a positive number greater than 0')
+    })
+
+    it('should throw an error if the from is less than 0', () => {
+      expect(() => { graphData.subscribe(0, -10, 10, data => { }) })
+        .toThrow('The from parameter needs to be a positive number')
     })
 
     it('should throw an error if subscribing the same listener to the same metric twice', () => {
       var listener = (data: Data.SeriesData) => { }
 
-      graphData.subscribe(0, 40000, listener)
-      expect(() => { graphData.subscribe(0, 50000, listener)}).toThrow('The callback has already been registered for this metric')
+      graphData.subscribe(0, 0, 40000, listener)
+      expect(() => { graphData.subscribe(0, 0, 50000, listener)})
+        .toThrow('The callback has already been registered for this metric')
     })
 
     it('should subscribe with the provider', () => {
       var dataReceived: Data.SeriesData
-      graphData.subscribe(0, 60000, data => {
+      graphData.subscribe(0, 0, 60000, data => {
         dataReceived = data
       })
       interval.flush(6)
@@ -95,8 +103,8 @@ describe(Data.GraphData.name, () => {
     it('should not renew provider subscription when next subscription span is shorter', () => {
       spyOn(dummyProvider, 'subscribe')
 
-      graphData.subscribe(0, 60000, data => { })
-      graphData.subscribe(0, 50000, data => { })
+      graphData.subscribe(0, 0, 60000, data => { })
+      graphData.subscribe(0, 0, 50000, data => { })
 
       expect(dummyProvider.subscribe).toHaveBeenCalledTimes(1)
     })
@@ -104,8 +112,8 @@ describe(Data.GraphData.name, () => {
     it('should renew provider subscription when next subscription span is longer', () => {
       spyOn(dummyProvider, 'subscribe')
 
-      graphData.subscribe(0, 40000, data => { })
-      graphData.subscribe(0, 50000, data => { })
+      graphData.subscribe(0, 0, 40000, data => { })
+      graphData.subscribe(0, 0, 50000, data => { })
 
       expect(dummyProvider.subscribe).toHaveBeenCalledTimes(2)
     })
@@ -114,8 +122,8 @@ describe(Data.GraphData.name, () => {
       var dataReceived: Data.SeriesData
       var dataReceived2: Data.SeriesData
 
-      graphData.subscribe(0, 40000, data => { dataReceived = data })
-      graphData.subscribe(0, 50000, data => { dataReceived2 = data })
+      graphData.subscribe(0, 0, 40000, data => { dataReceived = data })
+      graphData.subscribe(0, 0, 50000, data => { dataReceived2 = data })
       interval.flush(6)
       expect(dataReceived.points).not.toBeUndefined()
       expect(dataReceived2.points).not.toBeUndefined()
@@ -141,7 +149,7 @@ describe(Data.GraphData.name, () => {
       var dataReceived: Data.SeriesData = null
       var listener = (data: Data.SeriesData) => { dataReceived = data }
 
-      graphData.subscribe(0, 40000, listener)
+      graphData.subscribe(0, 0, 40000, listener)
       interval.flush(6)
 
       expect(dataReceived).not.toBeNull()
@@ -160,8 +168,8 @@ describe(Data.GraphData.name, () => {
       var listener = (data: Data.SeriesData) => { }
       var listener2 = (data: Data.SeriesData) => { }
 
-      graphData.subscribe(0, 40000, listener)
-      graphData.subscribe(0, 50000, listener2)
+      graphData.subscribe(0, 0, 40000, listener)
+      graphData.subscribe(0, 0, 50000, listener2)
       graphData.unsubscribe(0, listener)
       graphData.unsubscribe(0, listener2)
 
