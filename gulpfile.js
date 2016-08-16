@@ -65,17 +65,10 @@ function compile(source, destination) {
     })
   ];
 
-  if (process.argv[2].indexOf('spec') >= 0) {
-    plugins.push(require('rollup-plugin-istanbul')({
-      include: 'src/**/*',
-      exclude: ['**/*.spec.ts', '**/fixtures/**/*']
-    }));
-  }
-
   return rollup.rollup({
     entry: source,
     plugins: plugins,
-    sourceMap: (process.argv[2].indexOf('spec') >= 0) ? 'inline' : true
+    sourceMap: true
   }).then(bundle => {
     return bundle.write({ dest: destination });
   });

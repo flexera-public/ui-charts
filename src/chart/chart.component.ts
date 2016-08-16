@@ -86,7 +86,7 @@ export class ChartComponent {
     var availableMetrics = this.graphData.getMetrics()
 
     this.options.metricIds.forEach(id => {
-      let metricInfo = availableMetrics.find(m => m.id == id)
+      let metricInfo = _.find(availableMetrics, m => m.id == id)
       if (!metricInfo) throw `Cannot find metric with id [${id}]`
       let details: MetricDetails = _.clone(metricInfo)
       this.details.push(details)
@@ -109,7 +109,7 @@ export class ChartComponent {
     if (!_.isInteger(this.options.span) || this.options.span <= 0)
       throw 'span must be an integer greater than 0'
 
-    if (this.options.from && (!_.isInteger(this.options.from)  || this.options.from < 0))
+    if (this.options.from && (!_.isInteger(this.options.from) || this.options.from < 0))
       throw 'from must be a positive integer'
 
     return true
