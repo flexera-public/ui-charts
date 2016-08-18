@@ -1,7 +1,7 @@
 {
   "name": "@rightscale/ui-charts",
   "version": "0.0.1",
-  "description": "Renders time series as graphs for Angular",
+  "description": "Renders time series as charts for Angular",
   "main": "index.js",
   "dependencies": {
     "@rightscale/ui-angular-decorators": "^0.0.2",
@@ -17,6 +17,7 @@
     "del": "^2.2.1",
     "designkit-colors": "0.0.8",
     "designkit-global": "0.0.3",
+    "designkit-layout": "0.0.3",
     "designkit-typography": "0.0.9",
     "gulp": "^3.9.1",
     "gulp-angular-templatecache": "^2.0.0",

@@ -1,0 +1,12 @@
+rs-table-renderer {
+  table {
+    border: solid 1px #bbb;
+    border-radius: 3px;
+    border-collapse: true;
+  }
+
+  td, th {
+    border: solid 1px #bbb;
+    padding: 5px 10px;
+  }
+}

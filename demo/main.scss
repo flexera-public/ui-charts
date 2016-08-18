@@ -70,3 +70,7 @@ html, body {
 .content-box {
   padding: 20px;
 }
+
+[layout-margin] > * {
+  margin: 8px;
+}

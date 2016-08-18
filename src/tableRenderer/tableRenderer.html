@@ -1,0 +1,19 @@
+<div ng-repeat="metric in $ctrl.chart.details">
+  <h4>Metric: {{ metric.name }}</h4>
+
+  <table>
+    <tr>
+      <th>time</th>
+      <th ng-repeat="(k,v) in metric.points[0].data">
+        {{:: k }}
+      </th>
+    </tr>
+    <tr ng-repeat="point in metric.points">
+      <td>{{:: point.timestamp | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
+      <td ng-repeat="(k,v) in point.data">
+        {{:: v }}
+      </td>
+    </tr>
+  </table>
+</div>
+

@@ -3,6 +3,7 @@ import _ from 'lodash'
 
 type CallbackInfo = {
   span: number
+  from: number
   callback: MetricCallback
 }
 
@@ -14,17 +15,17 @@ type Subscription = {
 }
 
 export type MetricCallback = (data: SeriesData) => void
-export type DataPoints = {
-  [timestamp: string]: {
-    avg: number
-    min: number
-    max: number
-  }
-}
+
+export type PointData = { [key: string]: number }
+
+export type Points = {
+  timestamp: number
+  data: PointData
+}[]
 
 export interface SeriesData {
   readonly error?: string
-  readonly points?: DataPoints
+  readonly points?: Points
 }
 
 export interface MetricInfo {
@@ -39,7 +40,7 @@ export interface MetricsProvider {
   metrics(): ng.IPromise<MetricInfo[]>
   subscribe(metric: MetricInfo, span: number, listener: MetricCallback): void
   unsubscribe(metric: MetricInfo): void
-  getPoints(metric: MetricInfo, start: number, finish: number): ng.IPromise<DataPoints>
+  getPoints(metric: MetricInfo, start: number, finish: number): ng.IPromise<Points>
 }
 
 export interface Metric extends MetricInfo {
@@ -97,16 +98,18 @@ export class GraphData {
    * @param {number} span     Span, in milliseconds, of data to be returned
    * @param {MetricCallback} callback Function that will called whenever new data is available
    */
-  subscribe(metricId: number, span: number, callback: MetricCallback) {
+  subscribe(metricId: number, from: number, span: number, callback: MetricCallback) {
     var metric = this.allMetrics[metricId];
     if (!metric) throw `Cloud not find a metric with id [${metricId}]`
 
     if (span <= 0) throw 'The span parameter needs to be a positive number greater than 0'
+    if (from < 0) throw 'The from parameter needs to be a positive number'
 
     var subscription = this.subscriptions[metricId];
     if (!subscription) {
       subscription = {
         callbacks: [{
+          from: from,
           span: span,
           callback: callback
         }],
@@ -124,6 +127,7 @@ export class GraphData {
 
       subscription.callbacks.push({
         span: span,
+        from: from,
         callback: callback
       })
       this.refreshSubscription(subscription)
@@ -143,6 +147,7 @@ export class GraphData {
     _.remove(subscription.callbacks, c => c.callback == callback)
     if (subscription.callbacks.length == 0) {
       subscription.provider.unsubscribe(subscription.metric)
+      delete this.subscriptions[metricId]
     }
     else {
       this.refreshSubscription(subscription);
@@ -157,7 +162,7 @@ export class GraphData {
    * @param {number} finish
    * @returns {ng.IPromise<DataPoints>}
    */
-  getPoints(metricId: number, start: number, finish: number): ng.IPromise<DataPoints> {
+  getPoints(metricId: number, start: number, finish: number): ng.IPromise<Points> {
     var metric = this.allMetrics[metricId];
     if (!metric) throw `Cloud not find a metric with id [${metricId}]`
 
@@ -181,8 +186,9 @@ export class GraphData {
     if (data.error) subscribers.forEach(s => s.callback(data))
     else {
       subscribers.forEach(s => {
-        var limit = now - s.span
-        s.callback({ points: <DataPoints>_.pickBy(data.points, (v, k) => parseInt(k) >= limit) })
+        let from = now - s.from
+        let to = from - s.span
+        s.callback({ points: _.filter(data.points, p => p.timestamp <= from && p.timestamp >= to)})
       })
     }
   }
