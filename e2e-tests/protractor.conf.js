@@ -16,6 +16,7 @@ exports.config = {
 
   onPrepare: function () {
     global.Chart = require('./chart');
+    globar.Home  = require('./home');
   },
 
   framework: 'jasmine2',
