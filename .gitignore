@@ -2,4 +2,3 @@
 build/
 ./styles.scss
 node_modules/
-coverage/
