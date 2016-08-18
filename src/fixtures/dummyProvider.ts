@@ -90,7 +90,7 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
 }
 
 @lib.service
-@lib.inject(['$q'])
+@lib.inject(['$q', '$interval'])
 export class DummyMetricsProvider2 extends DummyMetricsProvider {
   dummyMetrics = [
     {

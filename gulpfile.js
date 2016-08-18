@@ -70,7 +70,7 @@ function compile(source, destination) {
     plugins: plugins,
     sourceMap: true
   }).then(bundle => {
-    return bundle.write({ dest: destination });
+    return bundle.write({ dest: destination, sourceMap: true });
   });
 }
 
