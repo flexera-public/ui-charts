@@ -1,4 +1,4 @@
 .tmp/
 build/
-./styles.scss
+/styles.scss
 node_modules/
