@@ -1,8 +1,7 @@
 language: node_js
 node_js:
 - '5.12.0'
-script:
-  - npm test
+before_deploy:
   - npm --no-git-tag-version version from-git
 deploy:
   provider: npm
