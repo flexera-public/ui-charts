@@ -16,7 +16,7 @@ type Subscription = {
 
 export type MetricCallback = (data: SeriesData) => void
 
-export type PointData = { [key: string]: number }
+export type PointData = { min: number, avg: number, max: number } | number
 
 export type Points = {
   timestamp: number
@@ -25,7 +25,7 @@ export type Points = {
 
 export interface SeriesData {
   readonly error?: string
-  readonly points?: Points
+  readonly points?: { [seriesName: string]: Points }
 }
 
 export interface MetricInfo {
@@ -188,7 +188,12 @@ export class GraphData {
       subscribers.forEach(s => {
         let from = now - s.from
         let to = from - s.span
-        s.callback({ points: _.filter(data.points, p => p.timestamp <= from && p.timestamp >= to)})
+        var points: { [seriesName: string]: Points } = {}
+        _.forEach(data.points, (v, k) => {
+          points[k] = _.filter(v, p => p.timestamp <= from && p.timestamp >= to)
+        })
+
+        s.callback({ points: points })
       })
     }
   }

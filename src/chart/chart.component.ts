@@ -15,7 +15,7 @@ interface SubscriptionData {
  * @interface MetricDetails
  */
 export interface MetricDetails extends Data.Metric {
-  points?: Data.Points
+  points?: { [seriesName: string]: Data.Points }
 }
 
 /**

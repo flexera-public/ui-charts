@@ -4,11 +4,11 @@
   <table>
     <tr>
       <th>time</th>
-      <th ng-repeat="(k,v) in metric.points[0].data">
+      <th ng-repeat="(k,v) in metric.points.series[0].data">
         {{:: k }}
       </th>
     </tr>
-    <tr ng-repeat="point in metric.points">
+    <tr ng-repeat="point in metric.points.series">
       <td>{{:: point.timestamp | date:'yyyy-MM-dd HH:mm:ss Z'}}</td>
       <td ng-repeat="(k,v) in point.data">
         {{:: v }}

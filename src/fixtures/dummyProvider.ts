@@ -8,8 +8,6 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
   name = 'Dummy Provider'
   description = 'dummy'
 
-  private timerHandler: ng.IPromise<void>
-
   dummyMetrics = [
     {
       name: 'foo',
@@ -27,11 +25,15 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
 
   constructor(
     private $q: ng.IQService,
-    private $interval: ng.IIntervalService
+    $interval: ng.IIntervalService
   ) {
     this.dummyMetrics.forEach(m => {
       this.points[m.name] = []
     })
+
+    $interval(() => {
+      this.dummyMetrics.forEach(m => { this.updateMetric(m, true) })
+    }, 2000)
   }
 
   metrics() {
@@ -42,12 +44,6 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
     var dummyMetric = _.find(this.dummyMetrics, m => m.name == metric.name)
     dummyMetric.listener = listener
     this.updateMetric(dummyMetric, false)
-
-    if (!this.timerHandler) {
-      this.timerHandler = this.$interval(() => {
-        this.dummyMetrics.forEach(m => { this.updateMetric(m, true) })
-      }, 2000)
-    }
   }
 
   unsubscribe(metric: Charts.Data.MetricInfo) {
@@ -56,7 +52,7 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
 
   getPoints(metric: Charts.Data.MetricInfo, start: number, finish: number): ng.IPromise<Charts.Data.SeriesData> {
     return this.$q.resolve({
-      points: this.points[metric.name].length ? this.points[metric.name] : this.buildPoints()
+      points: { 'series': this.points[metric.name].length ? this.points[metric.name] : this.buildPoints() }
     })
   }
 
@@ -68,16 +64,16 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
       else if (addPoint) {
         this.points[metric.name] = [{ timestamp: Date.now(), data: this.newPoint() }].concat(this.points[metric.name].slice(0, this.points[metric.name].length))
       }
-      metric.listener({ points: this.points[metric.name] })
+      metric.listener({ points: { 'series': this.points[metric.name] }})
     }
   }
 
   private newPoint(): Charts.Data.PointData {
-    var avg = 1 + Math.random() * 10
+    var avg = 1 + Math.random() * 3
     return {
-      'avg': avg,
-      'min': avg - Math.random(),
-      'max': avg + Math.random()
+      avg: avg,
+      min: avg - Math.random(),
+      max: avg + Math.random()
     }
   }
 
@@ -85,7 +81,7 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
     var points: Charts.Data.Points = []
     var now = Date.now()
 
-    for (var i = 0; i < 20; i++) {
+    for (var i = 0; i < 150; i++) {
       points.push({ timestamp: now - (i * 2000), data: this.newPoint() })
     }
 
