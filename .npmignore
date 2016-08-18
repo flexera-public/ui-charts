@@ -1,0 +1,12 @@
+.tmp/
+.vscode/
+demo/
+typings/
+.editorconfig
+.jshintrc
+.travis.yml
+config.json
+gulpfile.jshintrc
+karma.conf.jshintrc
+tsconfig.json
+typings.json
