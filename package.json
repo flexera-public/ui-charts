@@ -1,6 +1,6 @@
 {
   "name": "@rightscale/ui-charts",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Renders time series as charts for Angular",
   "main": "index.js",
   "dependencies": {
