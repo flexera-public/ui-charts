@@ -14,7 +14,9 @@ module.exports = function (config) {
     // list of files / patterns to load in the browser
     files: [
       '.tmp/demo/js/main.js',
-      '.tmp/spec.js'
+      '.tmp/spec.js',
+      { pattern: '.tmp/spec.js.map', included: false },
+      { pattern: '.tmp/demo/js/main.js.map', included: false }
     ],
 
     // list of files to exclude

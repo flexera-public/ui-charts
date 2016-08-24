@@ -55,7 +55,7 @@ export interface Metric extends MetricInfo {
 export class GraphData {
 
   private providers: MetricsProvider[] = [];
-  private allMetrics: { metric: MetricInfo, provider: MetricsProvider }[] = []
+  private allMetrics: { metric: Metric, provider: MetricsProvider }[] = []
 
   private subscriptions: Subscription[] = []
 
@@ -71,7 +71,7 @@ export class GraphData {
     provider.metrics().then(metrics => {
       metrics.forEach(metric => {
         this.allMetrics.push({
-          metric: metric,
+          metric: _.merge(metric, { id: this.allMetrics.length }),
           provider: provider
         })
       });
@@ -84,11 +84,10 @@ export class GraphData {
    * @param provider Optionally pass a provider to filter the list
    */
   getMetrics(provider?: MetricsProvider) {
-    var metrics = this.allMetrics
     if (provider) {
-      metrics = this.allMetrics.filter(m => m.provider == provider)
+      return this.allMetrics.filter(m => m.provider == provider).map(m => m.metric);
     }
-    return metrics.map((m, i) => <Metric>_.merge(_.clone(m.metric), { id: i }))
+    return this.allMetrics.map(m => m.metric);
   }
 
   /**

@@ -58,6 +58,7 @@ describe(Data.GraphData.name, () => {
     it('should get the metrics for a single provider', () => {
       var metrics = graphData.getMetrics(dummyProvider2)
       expect(metrics.length).toBe(1)
+      expect(metrics[0].id).toBe(2)
       expect(metrics[0].name).toBe('baz')
     })
   })
