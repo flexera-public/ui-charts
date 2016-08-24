@@ -57,13 +57,14 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
   }
 
   private updateMetric(metric: any, addPoint: boolean) {
+    if (!this.points[metric.name].length) {
+      this.points[metric.name] = this.buildPoints()
+    }
+    else if (addPoint) {
+      this.points[metric.name] = [{ timestamp: Date.now(), data: this.newPoint() }].concat(this.points[metric.name].slice(0, this.points[metric.name].length))
+    }
+
     if (metric.listener) {
-      if (!this.points[metric.name].length) {
-        this.points[metric.name] = this.buildPoints()
-      }
-      else if (addPoint) {
-        this.points[metric.name] = [{ timestamp: Date.now(), data: this.newPoint() }].concat(this.points[metric.name].slice(0, this.points[metric.name].length))
-      }
       metric.listener({ points: { 'series': this.points[metric.name] }})
     }
   }
