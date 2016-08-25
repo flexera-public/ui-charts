@@ -12,6 +12,7 @@ type Subscription = {
   span: number
   metric: MetricInfo
   provider: MetricsProvider
+  latestData?: SeriesPoints
 }
 
 export type MetricCallback = (data: SeriesData) => void
@@ -23,9 +24,11 @@ export type Points = {
   data: PointData
 }[]
 
+export type SeriesPoints = { [seriesName: string]: Points }
+
 export interface SeriesData {
   readonly error?: string
-  readonly points?: { [seriesName: string]: Points }
+  readonly points?: SeriesPoints
 }
 
 export interface MetricInfo {
@@ -124,12 +127,15 @@ export class GraphData {
         throw 'The callback has already been registered for this metric'
       }
 
-      subscription.callbacks.push({
+      let c = {
         span: span,
         from: from,
         callback: callback
-      })
+      };
+
+      subscription.callbacks.push(c)
       this.refreshSubscription(subscription)
+      this.dispatch(subscription.latestData, c);
     }
   }
 
@@ -175,25 +181,40 @@ export class GraphData {
     subscription.provider.subscribe(
       subscription.metric,
       max,
-      data => this.dispatch(data, subscription.callbacks)
+      data => this.dataReceived(data, subscription)
     )
   }
 
-  private dispatch(data: SeriesData, subscribers: CallbackInfo[]) {
-    var now = Date.now()
-
-    if (data.error) subscribers.forEach(s => s.callback(data))
+  /**
+   * Handles data being received from a provider and
+   *
+   * @private
+   * @param {SeriesData} data
+   * @param {Subscription} subscription
+   */
+  private dataReceived(data: SeriesData, subscription: Subscription) {
+    if (data.error) subscription.callbacks.forEach(s => s.callback(data))
     else {
-      subscribers.forEach(s => {
-        let from = now - s.from
-        let to = from - s.span
-        var points: { [seriesName: string]: Points } = {}
-        _.forEach(data.points, (v, k) => {
-          points[k] = _.filter(v, p => p.timestamp <= from && p.timestamp >= to)
-        })
-
-        s.callback({ points: points })
-      })
+      subscription.latestData = data.points;
+      subscription.callbacks.forEach(c => this.dispatch(data.points, c))
     }
+  }
+
+  /**
+   * Sends data points to a subscriber, matching the subscription window
+   *
+   * @private
+   * @param {SeriesPoints} points
+   * @param {CallbackInfo} callback
+   */
+  private dispatch(seriesPoints: SeriesPoints, callback: CallbackInfo) {
+    let from = Date.now() - callback.from
+    let to = from - callback.span
+    var points: { [seriesName: string]: Points } = {}
+    _.forEach(seriesPoints, (v, k) => {
+      points[k] = _.filter(v, p => p.timestamp <= from && p.timestamp >= to)
+    })
+
+    callback.callback({ points: points })
   }
 }
