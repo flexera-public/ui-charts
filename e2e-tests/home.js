@@ -9,13 +9,8 @@ var Home = {
 
   // Home content header
   home_content_header: function() {
-    return element.all(by.css('content-box ng-scope h1'));
-  },
-
-  // Home content text
-  home_content_text: function() {
-    return element.all(by.css('content-box ng-scope p'));
+    return element(by.css('div.ng-scope h1'));
   },
 };
 
-module.exports = Chart;
+module.exports = Home;

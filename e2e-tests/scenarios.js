@@ -7,9 +7,10 @@ describe('demo app', function() {
     browser.get('http://localhost:3000/');
   });
 
+
   describe('Menu', function() {
     it('should verify chart directive is present', function() {
-      expect(Chart.chart_directive().getText()).toEqual('Chart Directive');
+      expect(Server.server_page().getText()).toEqual('Server Page');
     });
 
     it('should verify chart directive is present', function() {
@@ -17,22 +18,28 @@ describe('demo app', function() {
     });
   });
 
-  describe("Content", function() {
+  describe("Server Page", function() {
+    beforeEach(function() {
+      Server.server_page().click();
+      Server.iframe();
+    });
+
+    it('should show quick filters', function() {
+      expect(Server.quick_filters().getText()).toContain('Quick Filters');
+    });
+
+    afterEach(function() {
+      Server.iframe_out();
+    });   
+  }); 
+
+  describe("Home", function() {
     beforeEach(function() {
       Home.home().click();
     });
 
     it('should verify header is valid', function() {
-      Home.home().click()
-      expect(Home.home_content_header().getText()).toEqual('Charts demo');
-    });
-
-    it('should verify description is valid', function() {
-      expect(Home.home_content_header().getText()).toEqual('This application is a demonstration and testbed for the Charts library.');
-    });    
+      expect(Home.home_content_header().getText()).toEqual('Hello from TSS UI');
+    });   
   });
-
-  // describe("Chart Directive", function() {
-    
-  // });  
 });
