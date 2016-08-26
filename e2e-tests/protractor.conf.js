@@ -15,9 +15,9 @@ exports.config = {
 
 
   onPrepare: function () {
-    global.Chart  = require('./chart');
     global.Home   = require('./home');
     global.Server = require('./server');
+    global.EC     = protractor.ExpectedConditions;
   },
 
   framework: 'jasmine2',
