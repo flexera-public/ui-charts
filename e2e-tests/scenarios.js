@@ -33,11 +33,9 @@ describe('Charts App', function() {
 
     describe("clicking show more", function() {
       it('should show more filters', function() {
-        var initial_list = Server.filters().count();
         browser.sleep(5000);
         Server.quick_filters_show_more().click();
-        var extended_list = Server.filters().count();
-        expect(extended_list).toBeGreaterThan(initial_list);
+        expect(Server.quick_filters_show_all().isPresent()).toBeTruthy();
       });
 
       it('should show link to show fewer filters', function() {
@@ -47,10 +45,8 @@ describe('Charts App', function() {
 
     describe("clicking show fewer", function() {
       it('should show fewer filters', function() {
-        var initial_list = Server.filters().count();
         Server.quick_filters_show_fewer().click();
-        var collapsed_list = Server.filters().count();
-        expect(collapsed_list).toBeLessThan(initial_list);
+        expect(Server.quick_filters_show_all().isPresent()).toBeFalsy();
       });
 
       it('should show link to show fewer filters', function() {
@@ -59,19 +55,19 @@ describe('Charts App', function() {
     });
 
     describe("clicking filters", function() {
-      beforeAll(function() {
+      beforeEach(function() {
         Server.active_filters().each(function(element, index) {
           element.click();
         });
       });
-      
+
       it('should show the right thumbnails with single filter', function() {
-        browser.pause();
         Server.quick_filter_select("cpu-0").click();
         expect(Server.thumbnails().count()).toEqual(2);
       });
 
       it('should show the right thumbnails with multiple filter', function() {
+        Server.quick_filter_select("cpu-0").click();
         Server.quick_filter_select("cpu-1").click();
         expect(Server.thumbnails().count()).toEqual(4);
       });

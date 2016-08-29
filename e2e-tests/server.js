@@ -29,6 +29,10 @@ var Server = {
     return element(by.className('chart-groups-show-more'));
   },
 
+  quick_filters_show_all: function() {
+    return element(by.className('chart-groups active'));
+  },
+
   quick_filters_show_fewer: function() {
     return element.all(by.className('chart-groups')).all(by.tagName('li')).filter(function(e, i) {
       return e.getText().then(function(text) {
