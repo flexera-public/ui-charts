@@ -5,6 +5,10 @@
 describe('Charts App', function() {
   beforeAll(function() {
     browser.get('http://localhost:3000/');
+    Login.email().sendKeys('resat-premium@rightscale.com');
+    Login.password().sendKeys('ec2Instances');
+    Login.account().sendKeys('60073');
+    Login.login().click();
   });
 
   describe('Menu', function() {
@@ -18,8 +22,14 @@ describe('Charts App', function() {
   });
 
   describe("Server Page", function() {
-    beforeEach(function() {
+    beforeAll(function() {
       Server.server_page().click();
+      Server.instance_box().sendKeys('516I0H6E6MN76');
+      Server.instance_button().click();
+    });
+
+    beforeEach(function() {
+      browser.sleep(5000);
       Server.iframe();
     });
 
@@ -27,30 +37,22 @@ describe('Charts App', function() {
       expect(Server.quick_filters_bar().getText()).toContain('Quick Filters');
     });
 
-    it('should have show more option', function() {
-      expect(Server.quick_filters_show_more().getText()).toContain('...Show more');
+    it('should have see all option', function() {
+      expect(Server.quick_filters_show_more().getText()).toContain('...See all');
     });
 
-    describe("clicking show more", function() {
+    describe("clicking see all", function() {
       it('should show more filters', function() {
         browser.sleep(5000);
         Server.quick_filters_show_more().click();
-        expect(Server.quick_filters_show_all().isPresent()).toBeTruthy();
-      });
-
-      it('should show link to show fewer filters', function() {
-        expect(Server.quick_filters_bar().getText()).toContain('...Show fewer');
+        expect(Server.multi_select_filters().isPresent()).toBeTruthy();
       });
     });
 
-    describe("clicking show fewer", function() {
-      it('should show fewer filters', function() {
-        Server.quick_filters_show_fewer().click();
-        expect(Server.quick_filters_show_all().isPresent()).toBeFalsy();
-      });
-
-      it('should show link to show fewer filters', function() {
-        expect(Server.quick_filters_bar().getText()).toContain('...Show more');
+    describe("clicking close", function() {
+      it('should close multi select filters', function() {
+        Server.multi_select_filters_close().click();
+        expect(Server.multi_select_filters().isPresent()).toBeFalsy();
       });
     });
 

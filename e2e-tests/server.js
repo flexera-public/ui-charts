@@ -9,6 +9,14 @@ var Server = {
     }).first();
   },
 
+  instance_box: function() {
+    return element(by.id('instanceId'));
+  },
+
+  instance_button: function() {
+    return element(by.buttonText('Go'));
+  },
+
   quick_filters_bar: function() {
     return element(by.className('chart-groups'));
   },
@@ -17,8 +25,12 @@ var Server = {
     return element.all(by.repeater('group in $ctrl.groups'));
   },
 
+  quick_filters: function() {
+    return element.all(by.repeater('tag in $ctrl.tags'));
+  },
+
   quick_filter_select: function(plugin) {
-    return this.filters().filter(function(e, i) {
+    return this.quick_filters().filter(function(e, i) {
       return e.getText().then(function(text) {
         return text === plugin
       });
@@ -30,23 +42,31 @@ var Server = {
   },
 
   quick_filters_show_all: function() {
-    return element(by.className('chart-groups active'));
-  },
-
-  quick_filters_show_fewer: function() {
-    return element.all(by.className('chart-groups')).all(by.tagName('li')).filter(function(e, i) {
-      return e.getText().then(function(text) {
-        return text === "...Show fewer"
-      });
-    }).first();
+    return element(by.className(''));
   },
 
   active_filters: function() {
-    return this.filters().all(by.className('chart-group ng-binding active'));
+    return this.quick_filters().filter(function(e, i) {
+      return e.$('a').getAttribute('class').then(function(text) {
+        return text.includes("active");
+      });
+    });
+  },
+
+  multi_select_filters: function() {
+    return element(by.className('cf chart-groups-filter'));
+  },
+
+  multi_select_filters_close: function() {
+    return element(by.xpath('//a[@data-rs-id="close-tags-search"]'));
+  },
+
+  multi_select_filters_text_box: function() {
+    return element(by.className('br1 pv1 pa2 ba b-grey f5 w5 sans color-text ng-valid ng-dirty ng-valid-parse ng-touched ng-not-empty'));
   },
 
   thumbnails: function() {
-    return element.all(by.repeater('metric in $ctrl.metrics track by metric.id'));
+    return element.all(by.repeater('metric in row track by metric.id'));
   },
 
   thumbnail_select: function(plugin) {
@@ -70,7 +90,7 @@ var Server = {
   },
 
   iframe: function() {
-    browser.switchTo().frame(element(by.css('iframe.ng-scope')).getWebElement());
+    browser.switchTo().frame(element(by.id('instanceFrame')).getWebElement());
   },
 
   iframe_out: function() {
