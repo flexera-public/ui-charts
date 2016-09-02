@@ -1,5 +1,5 @@
-import lib from '../lib'
-import * as Chart from '../chart/chart.component'
+import lib from '../lib';
+import * as Chart from '../chart/chart.component';
 
 @lib.component('rsTableRenderer', {
   require: {
@@ -8,5 +8,5 @@ import * as Chart from '../chart/chart.component'
   templateUrl: 'rs.charts/tableRenderer/tableRenderer.html'
 })
 export class TableRenderer {
-  chart: Chart.ChartComponent
+  chart: Chart.ChartComponent;
 }

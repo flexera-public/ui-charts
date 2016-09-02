@@ -1,10 +1,10 @@
-import 'angular/angular'
-import 'angular-ui-router/release/angular-ui-router'
+import 'angular/angular';
+import 'angular-ui-router/release/angular-ui-router';
 
-import './routes'
+import './routes';
 
-import '../.tmp/build/images'
-import '../.tmp/build/templates'
-import '../index'
+import '../.tmp/build/images';
+import '../.tmp/build/templates';
+import '../index';
 
-import './chart/chart.config'
+import './chart/chart.config';

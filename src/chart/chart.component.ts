@@ -1,10 +1,10 @@
-import lib from '../lib'
-import * as Data from '../dataProvider/dataProvider.service'
-import _ from 'lodash'
+import lib from '../lib';
+import * as Data from '../dataProvider/dataProvider.service';
+import _ from 'lodash';
 
 interface SubscriptionData {
-  metricId: number
-  callback: Data.MetricCallback
+  metricId: number;
+  callback: Data.MetricCallback;
 }
 
 /**
@@ -15,7 +15,7 @@ interface SubscriptionData {
  * @interface MetricDetails
  */
 export interface MetricDetails extends Data.Metric {
-  points?: { [seriesName: string]: Data.Points }
+  points?: { [seriesName: string]: Data.Points };
 }
 
 /**
@@ -25,10 +25,10 @@ export interface MetricDetails extends Data.Metric {
  * @interface ChartOptions
  */
 export interface ChartOptions {
-  span: number
-  from?: number
-  metricIds: number[]
-  paused?: boolean
+  span: number;
+  from?: number;
+  metricIds: number[];
+  paused?: boolean;
 }
 
 /**
@@ -45,19 +45,18 @@ export interface ChartOptions {
 @lib.inject([Data.GraphData, '$scope'])
 export class ChartComponent {
 
-  private subscriptions: SubscriptionData[] = []
-  private metrics: Data.Metric[]
+  public options: ChartOptions;
+  public details: MetricDetails[];
 
-  public options: ChartOptions
-  public details: MetricDetails[]
+  private subscriptions: SubscriptionData[] = [];
 
   constructor(
     private graphData: Data.GraphData,
     $scope: ng.IScope
   ) {
-    $scope.$watch(() => this.options, () => this.refreshSubscriptions(), true)
+    $scope.$watch(() => this.options, () => this.refreshSubscriptions(), true);
 
-    $scope.$on('$destroy', () => this.unsubscribe())
+    $scope.$on('$destroy', () => this.unsubscribe());
   }
 
   /**
@@ -67,9 +66,9 @@ export class ChartComponent {
    */
   private unsubscribe() {
     this.subscriptions.forEach(s => {
-      this.graphData.unsubscribe(s.metricId, s.callback)
-    })
-    this.subscriptions = []
+      this.graphData.unsubscribe(s.metricId, s.callback);
+    });
+    this.subscriptions = [];
   }
 
   /**
@@ -78,40 +77,48 @@ export class ChartComponent {
    * @private
    */
   private refreshSubscriptions() {
-    this.unsubscribe()
-    if (!this.validateOptions() || this.options.paused) return
+    this.unsubscribe();
+    if (!this.validateOptions() || this.options.paused) {
+      return;
+    }
 
-    this.details = []
+    this.details = [];
 
-    var availableMetrics = this.graphData.getMetrics()
+    let availableMetrics = this.graphData.getMetrics();
 
     this.options.metricIds.forEach(id => {
-      let metricInfo = _.find(availableMetrics, m => m.id == id)
-      if (!metricInfo) throw `Cannot find metric with id [${id}]`
-      let details: MetricDetails = _.clone(metricInfo)
-      this.details.push(details)
+      let metricInfo = _.find(availableMetrics, m => m.id === id);
+      if (!metricInfo) {
+        throw `Cannot find metric with id [${id}]`;
+      }
+      let details: MetricDetails = _.clone(metricInfo);
+      this.details.push(details);
 
       let subscription: SubscriptionData = {
         metricId: id,
         callback: (data: Data.SeriesData) => {
-          details.points = data.points
+          details.points = data.points;
         }
-      }
-      this.subscriptions.push(subscription)
+      };
+      this.subscriptions.push(subscription);
 
-      this.graphData.subscribe(id, this.options.from || 0, this.options.span, subscription.callback)
-    })
+      this.graphData.subscribe(id, this.options.from || 0, this.options.span, subscription.callback);
+    });
   }
 
   private validateOptions() {
-    if (!this.options || !this.options.metricIds || !this.options.metricIds.length || !this.options.span) return false
+    if (!this.options || !this.options.metricIds || !this.options.metricIds.length || !this.options.span) {
+      return false;
+    }
 
-    if (!_.isInteger(this.options.span) || this.options.span <= 0)
-      throw 'span must be an integer greater than 0'
+    if (!_.isInteger(this.options.span) || this.options.span <= 0) {
+      throw 'span must be an integer greater than 0';
+    }
 
-    if (this.options.from && (!_.isInteger(this.options.from) || this.options.from < 0))
-      throw 'from must be a positive integer'
+    if (this.options.from && (!_.isInteger(this.options.from) || this.options.from < 0)) {
+      throw 'from must be a positive integer';
+    }
 
-    return true
+    return true;
   }
 }

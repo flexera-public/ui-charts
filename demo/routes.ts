@@ -1,6 +1,6 @@
-import app from './app'
-import LayoutController from './layout/layout.controller'
-import {ChartController} from './chart/chart.controller'
+import app from './app';
+import LayoutController from './layout/layout.controller';
+import {ChartController} from './chart/chart.controller';
 
 app.config(['$stateProvider', '$urlRouterProvider'], (
   stateProvider: ng.ui.IStateProvider,
@@ -30,5 +30,5 @@ app.config(['$stateProvider', '$urlRouterProvider'], (
       data: {
         label: 'Chart Directive'
       }
-    })
+    });
 });

@@ -1,5 +1,5 @@
-import lib from '../lib'
-import _ from 'lodash'
+import lib from '../lib';
+import _ from 'lodash';
 
 type CallbackInfo = {
   span: number
@@ -15,10 +15,19 @@ type Subscription = {
   latestData?: SeriesPoints
 }
 
+/**
+ * Represents a function that handles data returned by a provider
+ */
 export type MetricCallback = (data: SeriesData) => void
 
+/**
+ * A single point of data
+ */
 export type PointData = { min: number, avg: number, max: number } | number
 
+/**
+ * Array of point data
+ */
 export type Points = {
   timestamp: number
   data: PointData
@@ -27,27 +36,45 @@ export type Points = {
 export type SeriesPoints = { [seriesName: string]: Points }
 
 export interface SeriesData {
-  readonly error?: string
-  readonly points?: SeriesPoints
+  readonly error?: string;
+  readonly points?: SeriesPoints;
 }
 
 export interface MetricInfo {
-  readonly name: string
-  readonly type: string
+  /**
+   * Name of the metric
+   */
+  readonly name: string;
+
+  /**
+   * Label to be shown next to the y-axis
+   */
+  readonly axisLabel?: string;
+
+  /**
+   * Value range a renderer should use when representing the metric
+   */
+  readonly axisRange?: { min: number, max: number };
+
+  /**
+   * How to format the y axis labels. Refer to http://numeraljs.com/ for format strings.
+   */
+  readonly format?: string;
 }
 
 export interface MetricsProvider {
-  readonly name: string
-  readonly description: string
+  readonly name: string;
+  readonly description: string;
 
-  metrics(): ng.IPromise<MetricInfo[]>
-  subscribe(metric: MetricInfo, span: number, listener: MetricCallback): void
-  unsubscribe(metric: MetricInfo): void
-  getPoints(metric: MetricInfo, start: number, finish: number): ng.IPromise<Points>
+  metrics(): ng.IPromise<MetricInfo[]>;
+  subscribe(metric: MetricInfo, span: number, listener: MetricCallback): void;
+  unsubscribe(metric: MetricInfo): void;
+  getPoints(metric: MetricInfo, start: number, finish: number): ng.IPromise<Points>;
 }
 
 export interface Metric extends MetricInfo {
-  readonly id: number
+  readonly id: number;
+  readonly providerName: string;
 }
 
 @lib.service
@@ -58,9 +85,9 @@ export interface Metric extends MetricInfo {
 export class GraphData {
 
   private providers: MetricsProvider[] = [];
-  private allMetrics: { metric: Metric, provider: MetricsProvider }[] = []
+  private allMetrics: { metric: Metric, provider: MetricsProvider }[] = [];
 
-  private subscriptions: Subscription[] = []
+  private subscriptions: Subscription[] = [];
 
   /**
    * Registers a metrics provider with the service and makes its metrics availble forEach
@@ -68,17 +95,17 @@ export class GraphData {
    */
   addProvider(provider: MetricsProvider) {
     if (this.providers.indexOf(provider) >= 0) {
-      throw `The [${provider.name}] metrics provider has already been added`
+      throw `The [${provider.name}] metrics provider has already been added`;
     }
-    this.providers.push(provider)
+    this.providers.push(provider);
     provider.metrics().then(metrics => {
       metrics.forEach(metric => {
         this.allMetrics.push({
-          metric: _.merge(metric, { id: this.allMetrics.length }),
+          metric: _.merge(metric, { id: this.allMetrics.length, providerName: provider.name }),
           provider: provider
-        })
+        });
       });
-    })
+    });
   }
 
   /**
@@ -88,7 +115,7 @@ export class GraphData {
    */
   getMetrics(provider?: MetricsProvider) {
     if (provider) {
-      return this.allMetrics.filter(m => m.provider == provider).map(m => m.metric);
+      return this.allMetrics.filter(m => m.provider === provider).map(m => m.metric);
     }
     return this.allMetrics.map(m => m.metric);
   }
@@ -101,13 +128,20 @@ export class GraphData {
    * @param {MetricCallback} callback Function that will called whenever new data is available
    */
   subscribe(metricId: number, from: number, span: number, callback: MetricCallback) {
-    var metric = this.allMetrics[metricId];
-    if (!metric) throw `Cloud not find a metric with id [${metricId}]`
+    let metric = this.allMetrics[metricId];
+    if (!metric) {
+      throw `Cloud not find a metric with id [${metricId}]`;
+    }
 
-    if (span <= 0) throw 'The span parameter needs to be a positive number greater than 0'
-    if (from < 0) throw 'The from parameter needs to be a positive number'
+    if (span <= 0) {
+      throw 'The span parameter needs to be a positive number greater than 0';
+    }
 
-    var subscription = this.subscriptions[metricId];
+    if (from < 0) {
+      throw 'The from parameter needs to be a positive number';
+    }
+
+    let subscription = this.subscriptions[metricId];
     if (!subscription) {
       subscription = {
         callbacks: [{
@@ -118,13 +152,13 @@ export class GraphData {
         span: 0,
         metric: metric.metric,
         provider: metric.provider
-      }
-      this.subscriptions[metricId] = subscription
-      this.refreshSubscription(subscription)
+      };
+      this.subscriptions[metricId] = subscription;
+      this.refreshSubscription(subscription);
     }
     else {
-      if (_.some(subscription.callbacks, c => c.callback == callback)) {
-        throw 'The callback has already been registered for this metric'
+      if (_.some(subscription.callbacks, c => c.callback === callback)) {
+        throw 'The callback has already been registered for this metric';
       }
 
       let c = {
@@ -133,8 +167,8 @@ export class GraphData {
         callback: callback
       };
 
-      subscription.callbacks.push(c)
-      this.refreshSubscription(subscription)
+      subscription.callbacks.push(c);
+      this.refreshSubscription(subscription);
       this.dispatch(subscription.latestData, c);
     }
   }
@@ -146,13 +180,15 @@ export class GraphData {
    * @param {MetricCallback} callback
    */
   unsubscribe(metricId: number, callback: MetricCallback) {
-    var subscription = this.subscriptions[metricId];
-    if (!subscription) throw `no subscription for metric [${metricId}]`
+    let subscription = this.subscriptions[metricId];
+    if (!subscription) {
+      throw `no subscription for metric [${metricId}]`;
+    }
 
-    _.remove(subscription.callbacks, c => c.callback == callback)
-    if (subscription.callbacks.length == 0) {
-      subscription.provider.unsubscribe(subscription.metric)
-      delete this.subscriptions[metricId]
+    _.remove(subscription.callbacks, c => c.callback === callback);
+    if (subscription.callbacks.length === 0) {
+      subscription.provider.unsubscribe(subscription.metric);
+      delete this.subscriptions[metricId];
     }
     else {
       this.refreshSubscription(subscription);
@@ -168,21 +204,26 @@ export class GraphData {
    * @returns {ng.IPromise<DataPoints>}
    */
   getPoints(metricId: number, start: number, finish: number): ng.IPromise<Points> {
-    var metric = this.allMetrics[metricId];
-    if (!metric) throw `Cloud not find a metric with id [${metricId}]`
+    let metric = this.allMetrics[metricId];
+    if (!metric) {
+      throw `Cloud not find a metric with id [${metricId}]`;
+    }
 
-    return metric.provider.getPoints(metric.metric, start, finish)
+    return metric.provider.getPoints(metric.metric, start, finish);
   }
 
   private refreshSubscription(subscription: Subscription) {
-    var max = _(subscription.callbacks).map(c => c.span).max()
-    if (subscription.span >= max) return
-    subscription.span = max
+    let max = _(subscription.callbacks).map(c => c.span).max();
+    if (subscription.span >= max) {
+      return;
+    }
+
+    subscription.span = max;
     subscription.provider.subscribe(
       subscription.metric,
       max,
       data => this.dataReceived(data, subscription)
-    )
+    );
   }
 
   /**
@@ -193,10 +234,12 @@ export class GraphData {
    * @param {Subscription} subscription
    */
   private dataReceived(data: SeriesData, subscription: Subscription) {
-    if (data.error) subscription.callbacks.forEach(s => s.callback(data))
+    if (data.error) {
+      subscription.callbacks.forEach(s => s.callback(data));
+    }
     else {
       subscription.latestData = data.points;
-      subscription.callbacks.forEach(c => this.dispatch(data.points, c))
+      subscription.callbacks.forEach(c => this.dispatch(data.points, c));
     }
   }
 
@@ -208,13 +251,13 @@ export class GraphData {
    * @param {CallbackInfo} callback
    */
   private dispatch(seriesPoints: SeriesPoints, callback: CallbackInfo) {
-    let from = Date.now() - callback.from
-    let to = from - callback.span
-    var points: { [seriesName: string]: Points } = {}
+    let from = Date.now() - callback.from;
+    let to = from - callback.span;
+    let points: { [seriesName: string]: Points } = {};
     _.forEach(seriesPoints, (v, k) => {
-      points[k] = _.filter(v, p => p.timestamp <= from && p.timestamp >= to)
-    })
+      points[k] = _.filter(v, p => p.timestamp <= from && p.timestamp >= to);
+    });
 
-    callback.callback({ points: points })
+    callback.callback({ points: points });
   }
 }
