@@ -18,7 +18,7 @@ var Server = {
   },
 
   quick_filters_bar: function() {
-    return element(by.className('chart-groups'));
+    return element(by.className('tag-selector'));
   },
 
   filters: function() {
@@ -38,11 +38,11 @@ var Server = {
   },
 
   quick_filters_show_more: function() {
-    return element(by.className('chart-groups-show-more'));
+    return element(by.className('tags-show-more'));
   },
 
   quick_filters_show_all: function() {
-    return element(by.className(''));
+    return element(by.className('tags-show-more'));
   },
 
   active_filters: function() {
@@ -54,15 +54,31 @@ var Server = {
   },
 
   multi_select_filters: function() {
-    return element(by.className('cf chart-groups-filter'));
+    return element(by.className('cf tags-filter'));
+  },
+
+  multi_select_filters_available: function() {
+    return element.all(by.repeater('filter:search:strict'))
   },
 
   multi_select_filters_close: function() {
     return element(by.xpath('//a[@data-rs-id="close-tags-search"]'));
   },
 
-  multi_select_filters_text_box: function() {
-    return element(by.className('br1 pv1 pa2 ba b-grey f5 w5 sans color-text ng-valid ng-dirty ng-valid-parse ng-touched ng-not-empty'));
+  // multi_select_filters_text_box: function() {
+  //   return element(by.className('br1 pv1 pa2 ba b-grey f5 w5 sans color-text ng-valid ng-dirty ng-valid-parse ng-touched ng-not-empty'));
+  // },
+
+  multi_select_filters_input: function() {
+    return element(by.xpath('//input[@data-rs-id="tag-search-input"]'));
+  },
+
+  multi_select_filter_select: function(plugin) {
+    return this.multi_select_filters().filter(function(e, i) {
+      return e.$('a').getText().then(function(text) {
+        return text === plugin;
+      });
+    });
   },
 
   thumbnails: function() {
@@ -71,14 +87,14 @@ var Server = {
 
   thumbnail_select: function(plugin) {
     return this.thumbnails().filter(function(e, i) {
-      return e.getText().then(function(text) {
+      return e.element(by.className('db b f5 ng-binding')).getText().then(function(text) {
         return text === plugin
       });
     }).first();
   },
 
   thumbnail_text: function(plugin) {
-    return this.thumbnail_select(plugin).element(by.css('div.chart-thumbnail-name'));
+    return this.thumbnail_select(plugin).element(by.className('chart-thumbnail-name'));
   },
 
   full_graph: function() {

@@ -26,10 +26,10 @@ describe('Charts App', function() {
       Server.server_page().click();
       Server.instance_box().sendKeys('516I0H6E6MN76');
       Server.instance_button().click();
+      browser.sleep(5000);
     });
 
     beforeEach(function() {
-      browser.sleep(5000);
       Server.iframe();
     });
 
@@ -43,7 +43,6 @@ describe('Charts App', function() {
 
     describe("clicking see all", function() {
       it('should show more filters', function() {
-        browser.sleep(5000);
         Server.quick_filters_show_more().click();
         expect(Server.multi_select_filters().isPresent()).toBeTruthy();
       });
@@ -81,17 +80,48 @@ describe('Charts App', function() {
     });
 
     describe("clicking on the thumbnail", function() {
+      beforeAll(function() {
+        Server.active_filters().each(function(element, index) {
+          element.click();
+        });
+      });
+
       it('should open full graph view', function() {
+        Server.quick_filter_select("cpu-0").click();
         Server.thumbnail_text("foo").click();
         expect(Server.full_graph().isPresent()).toEqual(true);
       });
-    });
-
-    describe("full graph", function() {
+      
       it('should close the full view when close is clicked', function() {
         expect(Server.full_graph_close().isPresent()).toEqual(true);
         Server.full_graph_close().click();
         expect(Server.full_graph().isPresent()).toEqual(false);
+      });      
+    });
+
+    describe("multi select filters", function() {
+
+      beforeEach(function() {
+        Server.active_filters().each(function(element, index) {
+          element.click();
+        });
+        Server.quick_filters_show_more().click();
+      });
+
+      it('should show all filters when input is empty', function() {
+        Server.multi_select_filters_input().clear();
+        expect(Server.multi_select_filters_available().count()).toBeGreaterThan(5);
+      });
+
+      it('should show only filters which match the search', function() {
+        Server.multi_select_filters_input().sendKeys('cpu');
+        Server.multi_select_filters_available().each(function(element, index) {
+          expect(element.getText()).toMatch(/cpu/);
+        });
+      });
+
+      afterEach(function() {
+        Server.multi_select_filters_close().click();
       });
     });
 
