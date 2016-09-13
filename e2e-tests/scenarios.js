@@ -120,6 +120,12 @@ describe('Charts App', function() {
         });
       });
 
+      it('should select user filter', function() {
+        Server.multi_select_filters_input().sendKeys('users');
+        Server.multi_select_filters_available().first().click();
+        expect(Server.active_filters().count()).toBe(0);
+      });
+
       afterEach(function() {
         Server.multi_select_filters_close().click();
       });
