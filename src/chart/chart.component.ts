@@ -45,8 +45,21 @@ export interface ChartOptions {
 @lib.inject([Data.GraphData, '$scope'])
 export class ChartComponent {
 
+  /**
+   * Configuration options
+   */
   public options: ChartOptions;
+
+  /**
+   * Chart data
+   */
   public details: MetricDetails[];
+
+  /**
+   * time stamp of the last time the data was update. A renderer should watch this value instead
+   * of the details as this will be much more efficient.
+   */
+  public lastUpdate: number;
 
   private subscriptions: SubscriptionData[] = [];
 
@@ -98,6 +111,7 @@ export class ChartComponent {
         metricId: id,
         callback: (data: Data.SeriesData) => {
           details.points = data.points;
+          this.lastUpdate = Date.now();
         }
       };
       this.subscriptions.push(subscription);
