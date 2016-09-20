@@ -4,7 +4,7 @@
   "description": "Renders time series as charts for Angular",
   "main": "index.js",
   "dependencies": {
-    "@rightscale/ui-angular-decorators": "^0.0.2",
+    "@rightscale/ui-angular-decorators": "^1.0.0",
     "lodash": "^4.14.1"
   },
   "devDependencies": {
