@@ -14,7 +14,7 @@
     "whitespace": [true, "check-branch", "check-operator"],
     "one-line": [true, "check-open-brace"],
     "interface-name": [true, "never-prefix"],
-    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore", "allow-trailing-underscore"],
     "no-empty": false
   }
 }

@@ -1,4 +1,4 @@
-import ngModule from '@rightscale/ui-angular-decorators';
+import Module from '@rightscale/ui-angular-decorators';
 
-let lib = new ngModule('rs.charts', []);
+let lib = new Module('rs.charts');
 export default lib;

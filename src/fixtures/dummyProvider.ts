@@ -2,8 +2,7 @@ import Charts from '../../index';
 import lib from '../lib';
 import _ from 'lodash';
 
-@lib.service
-@lib.inject(['$q', '$interval'])
+@lib.inject('$q', '$interval').service
 export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
   name = 'Dummy Provider';
   description = 'dummy';
@@ -102,8 +101,7 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
   }
 }
 
-@lib.service
-@lib.inject(['$q', '$interval'])
+@lib.inject('$q', '$interval').service
 export class DummyMetricsProvider2 extends DummyMetricsProvider {
   name = 'Dummy Provider 2';
 }

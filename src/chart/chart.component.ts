@@ -37,13 +37,12 @@ export interface ChartOptions {
  * @export
  * @class ChartComponent
  */
-@lib.component('rsChart', {
+@lib.inject(Data.GraphData, '$scope').component({
   bindings: {
     options: '='
   }
 })
-@lib.inject([Data.GraphData, '$scope'])
-export class ChartComponent {
+export class Chart {
 
   /**
    * Configuration options

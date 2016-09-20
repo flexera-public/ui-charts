@@ -5,7 +5,7 @@ interface TestScope extends ng.IScope {
   chartOptions: Charts.Chart.ChartOptions;
 }
 
-describe(Charts.Chart.ChartComponent.name, () => {
+describe(Charts.Chart.Chart.name, () => {
   let graphData: Charts.Data.GraphData;
   let dummyProvider: DummyMetricsProvider;
   let rootScope: ng.IRootScopeService;

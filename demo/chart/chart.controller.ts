@@ -3,8 +3,7 @@ import Charts from '../../index';
 import '../../src/tableRenderer/tableRenderer.directive';
 import _ from 'lodash';
 
-@app.controller
-@app.inject([Charts.Data.GraphData])
+@app.inject(Charts.Data.GraphData).controller
 export class ChartController {
   // Arbitrary list of time spans
   timeSpans = {
