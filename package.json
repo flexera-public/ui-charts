@@ -49,5 +49,13 @@
     "test": "gulp spec"
   },
   "author": "RightScale, André Rieussec",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rightscale/ui-charts-dygraph-renderer/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rightscale/ui-charts-dygraph-renderer"
+  },
+  "homepage": "https://github.com/rightscale/ui-charts-dygraph-renderer"
 }
