@@ -10,10 +10,12 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
   dummyMetrics = [
     {
       name: 'foo',
+      category: 'abc',
       listener: <Charts.Data.MetricCallback>null
     },
     {
       name: 'bar',
+      category: 'abc',
       axisLabel: 'percent',
       axisRange: {
         min: 0,
@@ -23,6 +25,7 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
     },
     {
       name: 'baz',
+      category: 'abc',
       axisLabel: 'bytes',
       format: '0b',
       listener: <Charts.Data.MetricCallback>null

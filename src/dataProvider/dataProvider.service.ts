@@ -47,6 +47,11 @@ export interface MetricInfo {
   readonly name: string;
 
   /**
+   * Arbitrary category that can be used to group several metrics
+   */
+  readonly category: string;
+
+  /**
    * Label to be shown next to the y-axis
    */
   readonly axisLabel?: string;
