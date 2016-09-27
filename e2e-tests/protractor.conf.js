@@ -19,6 +19,8 @@ exports.config = {
     global.Server = require('./server');
     global.Login  = require('./login');
     global.EC     = protractor.ExpectedConditions;
+
+    global.ChildProcess = require('child_process');
   },
 
   framework: 'jasmine2',

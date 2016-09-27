@@ -87,14 +87,14 @@ var Server = {
 
   thumbnail_select: function(plugin) {
     return this.thumbnails().filter(function(e, i) {
-      return e.element(by.className('db b f5 ng-binding')).getText().then(function(text) {
+      return e.element(by.xpath('//a[@data-rs-id="thumbnail-preview"]')).getText().then(function(text) {
         return text === plugin
       });
     }).first();
   },
 
   thumbnail_text: function(plugin) {
-    return this.thumbnail_select(plugin).element(by.className('chart-thumbnail-name'));
+    return this.thumbnail_select(plugin).element(by.xpath('//a[@data-rs-id="thumbnail-preview"]'));
   },
 
   full_graph: function() {
@@ -102,7 +102,7 @@ var Server = {
   },
 
   full_graph_close: function() {
-    return this.full_graph().element(by.className('close'));
+    return this.full_graph().element(by.xpath('//a[@data-rs-id="close-preview"]'));
   },
 
   iframe: function() {

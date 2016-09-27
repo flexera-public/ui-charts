@@ -4,11 +4,13 @@
 
 describe('Charts App', function() {
   beforeAll(function() {
-    browser.get('http://localhost:3000/');
+    browser.get('http://tss-ui.rightscale.local:3000/');
     Login.email().sendKeys('resat-premium@rightscale.com');
     Login.password().sendKeys('ec2Instances');
     Login.account().sendKeys('60073');
     Login.login().click();
+    // var ret = ChildProcess.execSync('ruby e2e-tests/setup_metrics.rb -e get_access_token');
+    // console.log(ret)
   });
 
   describe('Menu', function() {
@@ -24,7 +26,7 @@ describe('Charts App', function() {
   describe("Server Page", function() {
     beforeAll(function() {
       Server.server_page().click();
-      Server.instance_box().sendKeys('516I0H6E6MN76');
+      Server.instance_box().sendKeys('BR27CADED1C2V');
       Server.instance_button().click();
       browser.sleep(5000);
     });
@@ -64,18 +66,18 @@ describe('Charts App', function() {
 
       it('should show the right thumbnails with single filter', function() {
         Server.quick_filter_select("cpu-0").click();
-        expect(Server.thumbnails().count()).toEqual(2);
+        expect(Server.thumbnails().count()).toEqual(1);
       });
 
       it('should show the right thumbnails with multiple filter', function() {
         Server.quick_filter_select("cpu-0").click();
         Server.quick_filter_select("cpu-1").click();
-        expect(Server.thumbnails().count()).toEqual(4);
+        expect(Server.thumbnails().count()).toEqual(2);
       });
 
       it('should show the right thumbnails with filter is deselcted', function() {
         Server.quick_filter_select("cpu-1").click();
-        expect(Server.thumbnails().count()).toEqual(2);
+        expect(Server.thumbnails().count()).toEqual(1);
       });
     });
 
@@ -88,7 +90,7 @@ describe('Charts App', function() {
 
       it('should open full graph view', function() {
         Server.quick_filter_select("cpu-0").click();
-        Server.thumbnail_text("foo").click();
+        Server.thumbnail_text("cpu-idle").click();
         expect(Server.full_graph().isPresent()).toEqual(true);
       });
       
@@ -120,10 +122,10 @@ describe('Charts App', function() {
         });
       });
 
-      it('should select user filter', function() {
-        Server.multi_select_filters_input().sendKeys('users');
+      it('should select apache filter', function() {
+        Server.multi_select_filters_input().sendKeys('apache');
         Server.multi_select_filters_available().first().click();
-        expect(Server.active_filters().count()).toBe(0);
+        expect(Server.active_filters().count()).toBe(1);
       });
 
       afterEach(function() {
