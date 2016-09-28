@@ -88,13 +88,29 @@ var Server = {
   thumbnail_select: function(plugin) {
     return this.thumbnails().filter(function(e, i) {
       return e.element(by.xpath('//a[@data-rs-id="thumbnail-preview"]')).getText().then(function(text) {
-        return text === plugin
+        return text === plugin;
       });
     }).first();
   },
 
   thumbnail_text: function(plugin) {
     return this.thumbnail_select(plugin).element(by.xpath('//a[@data-rs-id="thumbnail-preview"]'));
+  },
+
+  timerange: function() {
+    return element(by.className('dropdown fr'));
+  },
+
+  timerange_menu: function() {
+    return element.all(by.repeater('span in $ctrl.spans'));
+  },
+
+  timerange_selector: function(range) {
+    return this.timerange_menu().filter(function(e, i) {
+      return e.getText().then(function(text) {
+        return text === range;
+      });
+    }).first();
   },
 
   full_graph: function() {

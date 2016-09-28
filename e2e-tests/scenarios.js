@@ -122,14 +122,32 @@ describe('Charts App', function() {
         });
       });
 
-      it('should select apache filter', function() {
-        Server.multi_select_filters_input().sendKeys('apache');
+      it('should select ping filter', function() {
+        Server.multi_select_filters_input().sendKeys('ping');
         Server.multi_select_filters_available().first().click();
         expect(Server.active_filters().count()).toBe(1);
       });
 
       afterEach(function() {
         Server.multi_select_filters_close().click();
+      });
+    });
+
+    describe("time range", function() {
+      it('should show the selector', function() {
+        expect(Server.timerange().isPresent()).toBeTruthy();
+      });
+
+      it('should show a drop down menu when selector is clicked', function() {
+        Server.timerange().click();
+        expect(Server.timerange_menu().count()).toEqual(6);
+        Server.timerange().click();
+      });
+
+      it('should successfully select month range', function() {
+        Server.timerange().click();
+        expect(Server.timerange_selector('Month').isPresent()).toBeTruthy();
+        Server.timerange_selector('Month').click();
       });
     });
 
