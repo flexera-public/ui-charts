@@ -97,13 +97,18 @@ export class GraphData {
   /**
    * Registers a metrics provider with the service and makes its metrics availble forEach
    * subscription
+   *
+   * @param {MetricsProvider} provider
+   * @returns a promise that is fulfilled once the provider's metrics have been retrieved
+   *
+   * @memberOf GraphData
    */
   addProvider(provider: MetricsProvider) {
     if (this.providers.indexOf(provider) >= 0) {
       throw `The [${provider.name}] metrics provider has already been added`;
     }
     this.providers.push(provider);
-    provider.metrics().then(metrics => {
+    return provider.metrics().then(metrics => {
       metrics.forEach(metric => {
         this.allMetrics.push({
           metric: _.merge(metric, { id: this.allMetrics.length, providerName: provider.name }),
