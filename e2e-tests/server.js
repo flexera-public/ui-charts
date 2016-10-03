@@ -87,14 +87,14 @@ var Server = {
 
   thumbnail_select: function(plugin) {
     return this.thumbnails().filter(function(e, i) {
-      return e.element(by.xpath('//a[@data-rs-id="thumbnail-preview"]')).getText().then(function(text) {
+      return e.$('a').getText().then(function(text) {
         return text === plugin;
       });
     }).first();
   },
 
   thumbnail_text: function(plugin) {
-    return this.thumbnail_select(plugin).element(by.xpath('//a[@data-rs-id="thumbnail-preview"]'));
+    return this.thumbnail_select(plugin).$('a');
   },
 
   timerange: function() {
@@ -119,6 +119,10 @@ var Server = {
 
   full_graph_close: function() {
     return this.full_graph().element(by.xpath('//a[@data-rs-id="close-preview"]'));
+  },
+
+  save_graph_button: function() {
+    return element(by.className('btn btn-default'));
   },
 
   iframe: function() {
