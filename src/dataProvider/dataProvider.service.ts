@@ -74,7 +74,7 @@ export interface MetricsProvider {
   metrics(): ng.IPromise<MetricInfo[]>;
   subscribe(metric: MetricInfo, span: number, listener: MetricCallback): void;
   unsubscribe(metric: MetricInfo): void;
-  getPoints(metric: MetricInfo, start: number, finish: number): ng.IPromise<Points>;
+  getPoints(metric: MetricInfo, start: number, finish: number): ng.IPromise<SeriesPoints>;
 }
 
 export interface Metric extends MetricInfo {
@@ -196,6 +196,7 @@ export class GraphData {
     }
 
     _.remove(subscription.callbacks, c => c.callback === callback);
+
     if (subscription.callbacks.length === 0) {
       subscription.provider.unsubscribe(subscription.metric);
       delete this.subscriptions[metricId];
@@ -213,7 +214,7 @@ export class GraphData {
    * @param {number} finish
    * @returns {ng.IPromise<DataPoints>}
    */
-  getPoints(metricId: number, start: number, finish: number): ng.IPromise<Points> {
+  getPoints(metricId: number, start: number, finish: number): ng.IPromise<SeriesPoints> {
     let metric = this.allMetrics[metricId];
     if (!metric) {
       throw `Cloud not find a metric with id [${metricId}]`;

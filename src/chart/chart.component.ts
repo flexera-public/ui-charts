@@ -37,7 +37,7 @@ export interface ChartOptions {
  * @export
  * @class ChartComponent
  */
-@lib.inject(Data.GraphData, '$scope').component({
+@lib.inject(Data.GraphData, '$q', '$scope').component({
   bindings: {
     options: '='
   }
@@ -64,11 +64,34 @@ export class Chart {
 
   constructor(
     private graphData: Data.GraphData,
+    private q: ng.IQService,
     $scope: ng.IScope
   ) {
     $scope.$watch(() => this.options, () => this.refreshSubscriptions(), true);
 
     $scope.$on('$destroy', () => this.unsubscribe());
+  }
+
+  /**
+   * Forces a refresh of the metric data even if the chart is paused.
+   *
+   * @memberOf Chart
+   */
+  forceRefresh(from: number, span: number) {
+    this.details = [];
+    let promises: ng.IPromise<any>[] = [];
+
+    this.enumMetrics(m => {
+      promises.push(this.graphData
+        .getPoints(m.id, from, from + span)
+        .then(p => {
+          let details: MetricDetails = _.clone(m);
+          details.points = p;
+          this.details.push(details);
+        }));
+    });
+
+    this.q.all(promises).then(() => this.lastUpdate = Date.now());
   }
 
   /**
@@ -96,6 +119,23 @@ export class Chart {
 
     this.details = [];
 
+    this.enumMetrics(m => {
+      let details: MetricDetails = _.clone(m);
+      this.details.push(details);
+
+      let subscription: SubscriptionData = {
+        metricId: m.id,
+        callback: (data: Data.SeriesData) => {
+          details.points = data.points;
+          this.lastUpdate = Date.now();
+        }
+      };
+      this.subscriptions.push(subscription);
+      this.graphData.subscribe(m.id, this.options.from || 0, this.options.span, subscription.callback);
+    });
+  }
+
+  private enumMetrics(cb: (metric: Data.Metric) => void) {
     let availableMetrics = this.graphData.getMetrics();
 
     this.options.metricIds.forEach(id => {
@@ -103,19 +143,8 @@ export class Chart {
       if (!metricInfo) {
         throw `Cannot find metric with id [${id}]`;
       }
-      let details: MetricDetails = _.clone(metricInfo);
-      this.details.push(details);
 
-      let subscription: SubscriptionData = {
-        metricId: id,
-        callback: (data: Data.SeriesData) => {
-          details.points = data.points;
-          this.lastUpdate = Date.now();
-        }
-      };
-      this.subscriptions.push(subscription);
-
-      this.graphData.subscribe(id, this.options.from || 0, this.options.span, subscription.callback);
+      cb(metricInfo);
     });
   }
 
