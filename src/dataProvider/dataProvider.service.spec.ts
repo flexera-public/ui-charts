@@ -1,4 +1,4 @@
-import { DummyMetricsProvider, DummyMetricsProvider2 } from '../fixtures/dummyProvider.ts';
+import { DummyMetricsProvider, DummyMetricsProvider2 } from '../fixtures/dummyProvider';
 import * as Data from './dataProvider.service';
 
 describe(Data.GraphData.name, () => {
@@ -59,7 +59,6 @@ describe(Data.GraphData.name, () => {
     it('should get the metrics for a single provider', () => {
       let metrics = graphData.getMetrics(dummyProvider2);
       expect(metrics.length).toBe(3);
-      expect(metrics[0].id).toBe(3);
       expect(metrics[0].name).toBe('foo');
       expect(metrics[0].providerName).toBe('Dummy Provider 2');
     });
@@ -72,31 +71,31 @@ describe(Data.GraphData.name, () => {
     });
 
     it('should throw an error if subscribing to a non-existent metric', () => {
-      expect(() => { graphData.subscribe(5, 0, 10, data => { }); })
-        .toThrow('Cloud not find a metric with id [5]');
+      expect(() => { graphData.subscribe('not real', 0, 10, data => { }); })
+        .toThrow('Cloud not find a metric with id [not real]');
     });
 
     it('should throw an error if the span is 0 or less', () => {
-      expect(() => { graphData.subscribe(0, 0, 0, data => { }); })
+      expect(() => { graphData.subscribe('Dummy Provider#foo', 0, 0, data => { }); })
         .toThrow('The span parameter needs to be a positive number greater than 0');
     });
 
     it('should throw an error if the from is less than 0', () => {
-      expect(() => { graphData.subscribe(0, -10, 10, data => { }); })
+      expect(() => { graphData.subscribe('Dummy Provider#foo', -10, 10, data => { }); })
         .toThrow('The from parameter needs to be a positive number');
     });
 
     it('should throw an error if subscribing the same listener to the same metric twice', () => {
       let listener = (data: Data.SeriesData) => { };
 
-      graphData.subscribe(0, 0, 40000, listener);
-      expect(() => { graphData.subscribe(0, 0, 50000, listener);})
+      graphData.subscribe('Dummy Provider#foo', 0, 40000, listener);
+      expect(() => { graphData.subscribe('Dummy Provider#foo', 0, 50000, listener);})
         .toThrow('The callback has already been registered for this metric');
     });
 
     it('should subscribe with the provider', () => {
       let dataReceived: Data.SeriesData;
-      graphData.subscribe(0, 0, 60000, data => {
+      graphData.subscribe('Dummy Provider#foo', 0, 60000, data => {
         dataReceived = data;
       });
       interval.flush(6);
@@ -106,8 +105,8 @@ describe(Data.GraphData.name, () => {
     it('should not renew provider subscription when next subscription span is shorter', () => {
       spyOn(dummyProvider, 'subscribe');
 
-      graphData.subscribe(0, 0, 60000, data => { });
-      graphData.subscribe(0, 0, 50000, data => { });
+      graphData.subscribe('Dummy Provider#foo', 0, 60000, data => { });
+      graphData.subscribe('Dummy Provider#foo', 0, 50000, data => { });
 
       expect(dummyProvider.subscribe).toHaveBeenCalledTimes(1);
     });
@@ -115,8 +114,8 @@ describe(Data.GraphData.name, () => {
     it('should renew provider subscription when next subscription span is longer', () => {
       spyOn(dummyProvider, 'subscribe');
 
-      graphData.subscribe(0, 0, 40000, data => { });
-      graphData.subscribe(0, 0, 50000, data => { });
+      graphData.subscribe('Dummy Provider#foo', 0, 40000, data => { });
+      graphData.subscribe('Dummy Provider#foo', 0, 50000, data => { });
 
       expect(dummyProvider.subscribe).toHaveBeenCalledTimes(2);
     });
@@ -125,8 +124,8 @@ describe(Data.GraphData.name, () => {
       let dataReceived: Data.SeriesData;
       let dataReceived2: Data.SeriesData;
 
-      graphData.subscribe(0, 0, 40000, data => { dataReceived = data; });
-      graphData.subscribe(0, 0, 50000, data => { dataReceived2 = data; });
+      graphData.subscribe('Dummy Provider#foo', 0, 40000, data => { dataReceived = data; });
+      graphData.subscribe('Dummy Provider#foo', 0, 50000, data => { dataReceived2 = data; });
       interval.flush(6);
       expect(dataReceived.points).not.toBeUndefined();
       expect(dataReceived2.points).not.toBeUndefined();
@@ -135,14 +134,16 @@ describe(Data.GraphData.name, () => {
 
   describe('unsubscribe()', () => {
     it('should throw an error if the metric does not exist', () => {
-      expect(() => { graphData.unsubscribe(5, data => { }); }).toThrow('no subscription for metric [5]');
+      expect(() => { graphData.unsubscribe('not real', data => { }); })
+        .toThrow('no subscription for metric [not real]');
     });
 
     it('should throw an error if the metric was not subscribed to', () => {
       graphData.addProvider(dummyProvider);
       rootScope.$apply();
 
-      expect(() => { graphData.unsubscribe(0, data => { }); }).toThrow('no subscription for metric [0]');
+      expect(() => { graphData.unsubscribe('Dummy Provider#foo', data => { }); })
+        .toThrow('no subscription for metric [Dummy Provider#foo]');
     });
 
     it('should no longer dispatch data to unsubscribed client', () => {
@@ -152,12 +153,12 @@ describe(Data.GraphData.name, () => {
       let dataReceived: Data.SeriesData = null;
       let listener = (data: Data.SeriesData) => { dataReceived = data; };
 
-      graphData.subscribe(0, 0, 40000, listener);
+      graphData.subscribe('Dummy Provider#foo', 0, 40000, listener);
       interval.flush(6);
 
       expect(dataReceived).not.toBeNull();
       dataReceived = null;
-      graphData.unsubscribe(0, listener);
+      graphData.unsubscribe('Dummy Provider#foo', listener);
       interval.flush(0);
       expect(dataReceived).toBeNull();
     });
@@ -171,10 +172,10 @@ describe(Data.GraphData.name, () => {
       let listener = (data: Data.SeriesData) => { };
       let listener2 = (data: Data.SeriesData) => { };
 
-      graphData.subscribe(0, 0, 40000, listener);
-      graphData.subscribe(0, 0, 50000, listener2);
-      graphData.unsubscribe(0, listener);
-      graphData.unsubscribe(0, listener2);
+      graphData.subscribe('Dummy Provider#foo', 0, 40000, listener);
+      graphData.subscribe('Dummy Provider#foo', 0, 50000, listener2);
+      graphData.unsubscribe('Dummy Provider#foo', listener);
+      graphData.unsubscribe('Dummy Provider#foo', listener2);
 
       expect(dummyProvider.unsubscribe).toHaveBeenCalledTimes(1);
     });

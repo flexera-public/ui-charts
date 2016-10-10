@@ -1,4 +1,4 @@
-import { DummyMetricsProvider } from '../fixtures/dummyProvider.ts';
+import { DummyMetricsProvider } from '../fixtures/dummyProvider';
 import Charts from '../../index';
 
 interface TestScope extends ng.IScope {
@@ -40,7 +40,7 @@ describe(Charts.Chart.Chart.name, () => {
     let scope = <TestScope>rootScope.$new();
     scope.chartOptions = {
       span: 10000,
-      metricIds: [0]
+      metricIds: ['Dummy Provider#foo']
     };
     compile('<rs-chart options="chartOptions"></rs-chart>')(scope);
     scope.$digest();
@@ -52,7 +52,7 @@ describe(Charts.Chart.Chart.name, () => {
     let scope = <TestScope>rootScope.$new();
     scope.chartOptions = {
       span: 10000,
-      metricIds: [0, 1]
+      metricIds: ['Dummy Provider#foo', 'Dummy Provider#bar']
     };
     compile('<rs-chart options="chartOptions"></rs-chart>')(scope);
     scope.$digest();
@@ -63,11 +63,11 @@ describe(Charts.Chart.Chart.name, () => {
     let scope = <TestScope>rootScope.$new();
     scope.chartOptions = {
       span: 10000,
-      metricIds: [0]
+      metricIds: ['Dummy Provider#foo']
     };
     compile('<rs-chart options="chartOptions"></rs-chart>')(scope);
     scope.$digest();
-    scope.chartOptions.metricIds.push(1);
+    scope.chartOptions.metricIds.push('Dummy Provider#bar');
     scope.$digest();
     expect(graphData.subscribe).toHaveBeenCalledTimes(3);
   });

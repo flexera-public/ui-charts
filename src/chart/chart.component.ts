@@ -3,7 +3,7 @@ import * as Data from '../dataProvider/dataProvider.service';
 import _ from 'lodash';
 
 interface SubscriptionData {
-  metricId: number;
+  metricId: string;
   callback: Data.MetricCallback;
 }
 
@@ -27,7 +27,7 @@ export interface MetricDetails extends Data.Metric {
 export interface ChartOptions {
   span: number;
   from?: number;
-  metricIds: number[];
+  metricIds: string[];
   paused?: boolean;
 }
 

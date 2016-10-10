@@ -78,7 +78,7 @@ export interface MetricsProvider {
 }
 
 export interface Metric extends MetricInfo {
-  readonly id: number;
+  readonly id: string;
   readonly providerName: string;
 }
 
@@ -92,7 +92,7 @@ export class GraphData {
   private providers: MetricsProvider[] = [];
   private allMetrics: { metric: Metric, provider: MetricsProvider }[] = [];
 
-  private subscriptions: Subscription[] = [];
+  private subscriptions: _.Dictionary<Subscription> = {};
 
   /**
    * Registers a metrics provider with the service and makes its metrics availble forEach
@@ -111,7 +111,7 @@ export class GraphData {
     return provider.metrics().then(metrics => {
       metrics.forEach(metric => {
         this.allMetrics.push({
-          metric: _.merge(metric, { id: this.allMetrics.length, providerName: provider.name }),
+          metric: _.merge(metric, { id: `${provider.name}#${metric.name}`, providerName: provider.name }),
           provider: provider
         });
       });
@@ -137,8 +137,8 @@ export class GraphData {
    * @param {number} span     Span, in milliseconds, of data to be returned
    * @param {MetricCallback} callback Function that will called whenever new data is available
    */
-  subscribe(metricId: number, from: number, span: number, callback: MetricCallback) {
-    let metric = this.allMetrics[metricId];
+  subscribe(metricId: string, from: number, span: number, callback: MetricCallback) {
+    let metric = _.find(this.allMetrics, m => m.metric.id === metricId);
     if (!metric) {
       throw `Cloud not find a metric with id [${metricId}]`;
     }
@@ -189,7 +189,7 @@ export class GraphData {
    * @param {number} metricId
    * @param {MetricCallback} callback
    */
-  unsubscribe(metricId: number, callback: MetricCallback) {
+  unsubscribe(metricId: string, callback: MetricCallback) {
     let subscription = this.subscriptions[metricId];
     if (!subscription) {
       throw `no subscription for metric [${metricId}]`;
@@ -214,8 +214,8 @@ export class GraphData {
    * @param {number} finish
    * @returns {ng.IPromise<DataPoints>}
    */
-  getPoints(metricId: number, start: number, finish: number): ng.IPromise<SeriesPoints> {
-    let metric = this.allMetrics[metricId];
+  getPoints(metricId: string, start: number, finish: number): ng.IPromise<SeriesPoints> {
+    let metric = _.find(this.allMetrics, m => m.metric.id === metricId);
     if (!metric) {
       throw `Cloud not find a metric with id [${metricId}]`;
     }
