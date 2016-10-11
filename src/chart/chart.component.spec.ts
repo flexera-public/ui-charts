@@ -40,7 +40,7 @@ describe(Charts.Chart.Chart.name, () => {
     let scope = <TestScope>rootScope.$new();
     scope.chartOptions = {
       span: 10000,
-      metricIds: ['Dummy Provider#foo']
+      metricIds: ['Dummy Provider#abc#foo']
     };
     compile('<rs-chart options="chartOptions"></rs-chart>')(scope);
     scope.$digest();
@@ -52,7 +52,7 @@ describe(Charts.Chart.Chart.name, () => {
     let scope = <TestScope>rootScope.$new();
     scope.chartOptions = {
       span: 10000,
-      metricIds: ['Dummy Provider#foo', 'Dummy Provider#bar']
+      metricIds: ['Dummy Provider#abc#foo', 'Dummy Provider#abc#bar']
     };
     compile('<rs-chart options="chartOptions"></rs-chart>')(scope);
     scope.$digest();
@@ -63,11 +63,11 @@ describe(Charts.Chart.Chart.name, () => {
     let scope = <TestScope>rootScope.$new();
     scope.chartOptions = {
       span: 10000,
-      metricIds: ['Dummy Provider#foo']
+      metricIds: ['Dummy Provider#abc#foo']
     };
     compile('<rs-chart options="chartOptions"></rs-chart>')(scope);
     scope.$digest();
-    scope.chartOptions.metricIds.push('Dummy Provider#bar');
+    scope.chartOptions.metricIds.push('Dummy Provider#abc#bar');
     scope.$digest();
     expect(graphData.subscribe).toHaveBeenCalledTimes(3);
   });
