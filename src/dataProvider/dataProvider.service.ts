@@ -111,7 +111,10 @@ export class GraphData {
     return provider.metrics().then(metrics => {
       metrics.forEach(metric => {
         this.allMetrics.push({
-          metric: _.merge(metric, { id: `${provider.name}#${metric.name}`, providerName: provider.name }),
+          metric: _.merge(metric, {
+            id: `${provider.name}#${metric.category}#${metric.name}`,
+            providerName: provider.name
+          }),
           provider: provider
         });
       });
