@@ -62,6 +62,11 @@ export interface MetricInfo {
   readonly axisRange?: { min: number, max: number };
 
   /**
+   * When rendered as a line graph, indicate whether the series should be stacked by default.
+   */
+  readonly stack?: boolean;
+
+  /**
    * How to format the y axis labels. Refer to http://numeraljs.com/ for format strings.
    */
   readonly format?: string;
