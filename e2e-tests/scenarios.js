@@ -26,7 +26,7 @@ describe('Charts App', function() {
   describe("Server Page", function() {
     beforeAll(function() {
       Server.server_page().click();
-      Server.instance_box().sendKeys('BR27CADED1C2V');
+      Server.instance_box().sendKeys('C4NADQ8I9LN9K');
       Server.instance_button().click();
       browser.sleep(5000);
     });
@@ -66,18 +66,18 @@ describe('Charts App', function() {
 
       it('should show the right thumbnails with single filter', function() {
         Server.quick_filter_select("cpu-0").click();
-        expect(Server.thumbnails().count()).toEqual(1);
+        expect(Server.thumbnails().count()).toEqual(2);
       });
 
       it('should show the right thumbnails with multiple filter', function() {
         Server.quick_filter_select("cpu-0").click();
         Server.quick_filter_select("cpu-1").click();
-        expect(Server.thumbnails().count()).toEqual(2);
+        expect(Server.thumbnails().count()).toEqual(4);
       });
 
       it('should show the right thumbnails with filter is deselcted', function() {
         Server.quick_filter_select("cpu-1").click();
-        expect(Server.thumbnails().count()).toEqual(1);
+        expect(Server.thumbnails().count()).toEqual(2);
       });
     });
 
@@ -123,7 +123,7 @@ describe('Charts App', function() {
       });
 
       it('should select ping filter', function() {
-        Server.multi_select_filters_input().sendKeys('ping');
+        Server.multi_select_filters_input().sendKeys('apache');
         Server.multi_select_filters_available().first().click();
         expect(Server.active_filters().count()).toBe(1);
       });
@@ -149,6 +149,25 @@ describe('Charts App', function() {
         expect(Server.timerange_selector('Month').isPresent()).toBeTruthy();
         Server.timerange_selector('Month').click();
       });
+    });
+
+    describe("save graph", function() {
+      it('show select all graphs sucessfully', function() {
+        expect(SavedGraph.select_all().isPresent()).toBeTruthy();
+        SavedGraph.select_all().click();
+      });
+
+      // it('should show a drop down menu when selector is clicked', function() {
+      //   Server.timerange().click();
+      //   expect(Server.timerange_menu().count()).toEqual(6);
+      //   Server.timerange().click();
+      // });
+
+      // it('should successfully select month range', function() {
+      //   Server.timerange().click();
+      //   expect(Server.timerange_selector('Month').isPresent()).toBeTruthy();
+      //   Server.timerange_selector('Month').click();
+      // });
     });
 
     afterEach(function() {

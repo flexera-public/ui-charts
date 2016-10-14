@@ -17,6 +17,7 @@ exports.config = {
   onPrepare: function () {
     global.Home   = require('./home');
     global.Server = require('./server');
+    global.SavedGraph = require('./saved_graph');
     global.Login  = require('./login');
     global.EC     = protractor.ExpectedConditions;
 

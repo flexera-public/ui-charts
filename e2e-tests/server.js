@@ -2,27 +2,19 @@ var Server = {
 
   // chart directive element
   server_page: function() {
-    return element.all(by.repeater('state in $ctrl.states')).filter(function(e, i) {
-      return e.getText().then(function(text) {
-        return text === "Server Page"
-      });
-    }).first();
+    return element(by.xpath('//a[@data-rs-id="menu-link-server"]'));
   },
 
   instance_box: function() {
-    return element(by.id('instanceId'));
+    return element(by.xpath('//input[@data-rs-id="instance-id-input"]'));
   },
 
   instance_button: function() {
-    return element(by.buttonText('Go'));
+    return element(by.xpath('//button[@data-rs-id="view-instance-charts"]'));
   },
 
   quick_filters_bar: function() {
     return element(by.className('tag-selector'));
-  },
-
-  filters: function() {
-    return element.all(by.repeater('group in $ctrl.groups'));
   },
 
   quick_filters: function() {
@@ -38,10 +30,6 @@ var Server = {
   },
 
   quick_filters_show_more: function() {
-    return element(by.className('tags-show-more'));
-  },
-
-  quick_filters_show_all: function() {
     return element(by.className('tags-show-more'));
   },
 
@@ -98,7 +86,7 @@ var Server = {
   },
 
   timerange: function() {
-    return element(by.className('dropdown fr'));
+    return element(by.xpath('//button[@data-rs-id="time-range-dropdown"]'));
   },
 
   timerange_menu: function() {
@@ -121,8 +109,12 @@ var Server = {
     return this.full_graph().element(by.xpath('//a[@data-rs-id="close-preview"]'));
   },
 
-  save_graph_button: function() {
-    return element(by.className('btn btn-default'));
+  all_graph_tab: function() {
+    return element(by.xpath('//a[@data-rs-id="tab-all"]'));
+  },
+
+  thumbnail_preview_select: function() {
+    return element(by.xpath('//label[@data-rs-id="thumbnail-preview-select"]'));
   },
 
   iframe: function() {
