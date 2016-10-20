@@ -70,7 +70,7 @@ var Server = {
   },
 
   thumbnails: function() {
-    return element.all(by.repeater('metric in row track by metric.id'));
+    return element.all(by.xpath('//div[@data-rs-id="thumbnail-preview"]'));
   },
 
   thumbnail_select: function(plugin) {
@@ -113,8 +113,16 @@ var Server = {
     return element(by.xpath('//a[@data-rs-id="tab-all"]'));
   },
 
-  thumbnail_preview_select: function() {
-    return element(by.xpath('//label[@data-rs-id="thumbnail-preview-select"]'));
+  thumbnail_preview_select: function(e) {
+    return e.$('label');
+  },
+
+  selected_graphs: function() {
+    return this.thumbnails().filter(function(e, i) {
+      return e.$('label').$('input').getWebElement().then(function(thumbnail_preview) {
+        return thumbnail_preview.isSelected();
+      });
+    });
   },
 
   iframe: function() {

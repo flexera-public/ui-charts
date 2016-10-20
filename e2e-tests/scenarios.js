@@ -152,9 +152,23 @@ describe('Charts App', function() {
     });
 
     describe("save graph", function() {
-      it('show select all graphs sucessfully', function() {
-        expect(SavedGraph.select_all().isPresent()).toBeTruthy();
+      beforeEach(function() {
+        Server.selected_graphs().each(function(element, index) {
+          Server.thumbnail_preview_select(element).click();
+        });
+      });
+
+      it('select all link should add all graphs to the list sucessfully', function() {
+        expect(SavedGraph.select_all().isDisplayed()).toBeTruthy();
         SavedGraph.select_all().click();
+        expect(SavedGraph.select_all().isDisplayed()).toBeFalsy();
+      });
+
+      it('deselect all should remove selected graphs from list sucessfully', function() {
+        SavedGraph.select_all().click();
+        expect(SavedGraph.deselect_all().isDisplayed()).toBeTruthy();
+        SavedGraph.deselect_all().click();
+        expect(SavedGraph.deselect_all().isDisplayed()).toBeFalsy();
       });
 
       // it('should show a drop down menu when selector is clicked', function() {
