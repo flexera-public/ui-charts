@@ -3,6 +3,7 @@ import * as Data from '../dataProvider/dataProvider.service';
 import _ from 'lodash';
 
 interface SubscriptionData {
+  live?: boolean;
   metricId: string;
   callback: Data.MetricCallback;
 }
@@ -83,7 +84,7 @@ export class Chart {
 
     this.enumMetrics(m => {
       promises.push(this.graphData
-        .getPoints(m.id, from, from + span)
+        .getPoints(m.id, from - span, from)
         .then(p => {
           let details: MetricDetails = _.clone(m);
           details.points = p;
@@ -101,7 +102,9 @@ export class Chart {
    */
   private unsubscribe() {
     this.subscriptions.forEach(s => {
-      this.graphData.unsubscribe(s.metricId, s.callback);
+      if (s.live) {
+        this.graphData.unsubscribe(s.metricId, s.callback);
+      }
     });
     this.subscriptions = [];
   }
@@ -131,8 +134,17 @@ export class Chart {
         }
       };
       this.subscriptions.push(subscription);
-      this.graphData.subscribe(m.id, this.options.from || 0, this.options.span, subscription.callback);
+      if (this.options.from === 0) {
+        // Live updates
+        subscription.live = true;
+        this.graphData.subscribe(m.id, 0, this.options.span, subscription.callback);
+      }
     });
+
+    if (this.options.from !== 0) {
+      this.options.paused = true;
+      this.forceRefresh(this.options.from, this.options.span);
+    }
   }
 
   private enumMetrics(cb: (metric: Data.Metric) => void) {

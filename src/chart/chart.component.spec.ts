@@ -39,6 +39,7 @@ describe(Charts.Chart.Chart.name, () => {
   it('should subscribe to one metric', () => {
     let scope = <TestScope>rootScope.$new();
     scope.chartOptions = {
+      from: 0,
       span: 10000,
       metricIds: ['Dummy Provider#abc#foo']
     };
@@ -51,6 +52,7 @@ describe(Charts.Chart.Chart.name, () => {
   it('should subscribe to two metrics', () => {
     let scope = <TestScope>rootScope.$new();
     scope.chartOptions = {
+      from: 0,
       span: 10000,
       metricIds: ['Dummy Provider#abc#foo', 'Dummy Provider#abc#bar']
     };
@@ -62,6 +64,7 @@ describe(Charts.Chart.Chart.name, () => {
   it('should subscribe to a new metric added to the options', () => {
     let scope = <TestScope>rootScope.$new();
     scope.chartOptions = {
+      from: 0,
       span: 10000,
       metricIds: ['Dummy Provider#abc#foo']
     };
