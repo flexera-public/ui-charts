@@ -1,6 +1,6 @@
+import _ from 'lodash';
 import Charts from '../../index';
 import lib from '../lib';
-import _ from 'lodash';
 
 @lib.inject('$q', '$interval').service
 export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
@@ -63,7 +63,7 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
 
   getPoints(metric: Charts.Data.MetricInfo, start: number, finish: number): ng.IPromise<Charts.Data.SeriesData> {
     return this.$q.resolve({
-      points: { 'series': this.points[metric.name].length ? this.points[metric.name] : this.buildPoints(metric) }
+      points: { series: this.points[metric.name].length ? this.points[metric.name] : this.buildPoints(metric) }
     });
   }
 
@@ -78,7 +78,7 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
     }
 
     if (metric.listener) {
-      metric.listener({ points: { 'series': this.points[metric.name] }});
+      metric.listener({ points: { series: this.points[metric.name] }});
     }
   }
 
@@ -86,7 +86,7 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
     let range = metric.range || { min: 0, max: 5 };
     let avg = range.min + Math.random() * range.max;
     return {
-      avg: avg,
+      avg,
       min: Math.max(avg - Math.random(), range.min),
       max: Math.min(avg + Math.random(), range.max)
     };
@@ -104,6 +104,7 @@ export class DummyMetricsProvider implements Charts.Data.MetricsProvider {
   }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 @lib.inject('$q', '$interval').service
 export class DummyMetricsProvider2 extends DummyMetricsProvider {
   name = 'Dummy Provider 2';

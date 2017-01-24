@@ -1,6 +1,6 @@
-import app from '../app';
 import Charts from '../../index';
 import { DummyMetricsProvider } from '../../src/fixtures/dummyProvider';
+import app from '../app';
 
 app
   .inject(Charts.Data.GraphData, DummyMetricsProvider)

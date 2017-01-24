@@ -1,5 +1,5 @@
-import lib from '../lib';
 import * as Chart from '../chart/chart.component';
+import lib from '../lib';
 
 @lib.component({
   require: {

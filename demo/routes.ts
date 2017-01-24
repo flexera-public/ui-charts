@@ -1,6 +1,6 @@
 import app from './app';
-import LayoutController from './layout/layout.controller';
 import { ChartController } from './chart/chart.controller';
+import LayoutController from './layout/layout.controller';
 
 app.inject('$stateProvider', '$urlRouterProvider').config((
   stateProvider: ng.ui.IStateProvider,

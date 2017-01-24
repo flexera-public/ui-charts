@@ -1,5 +1,5 @@
-import { DummyMetricsProvider } from '../fixtures/dummyProvider';
 import Charts from '../../index';
+import { DummyMetricsProvider } from '../fixtures/dummyProvider';
 
 interface TestScope extends ng.IScope {
   chartOptions: Charts.Chart.ChartOptions;

@@ -1,7 +1,7 @@
-import app from '../app';
+import _ from 'lodash';
 import Charts from '../../index';
 import '../../src/tableRenderer/tableRenderer.directive';
-import _ from 'lodash';
+import app from '../app';
 
 @app.inject(Charts.Data.GraphData).controller
 export class ChartController {

@@ -1,235 +1,252 @@
-var gulp = require('gulp');
-var htmlhint = require('gulp-htmlhint');
-var htmlmin = require('gulp-htmlmin');
-var svgmin = require('gulp-svgmin');
-var templatecache = require('gulp-angular-templatecache');
-var watch = require('gulp-watch');
-var sass = require('gulp-sass');
-var sourcemaps = require('gulp-sourcemaps');
-var browserSync = require('browser-sync');
-var inject = require('gulp-inject');
+var build = require('@rightscale/ui-build-tools');
 
-var karma = require('karma');
-
-var rollup = require('rollup');
-var babel = require('rollup-plugin-babel');
-var typescript = require('rollup-plugin-typescript');
-var commonjs = require('rollup-plugin-commonjs');
-var nodeResolve = require('rollup-plugin-node-resolve');
-
-var config = require('./config.json');
-
-// set to true when the default task is running and we're watching
-// for file changes. This is used to prevent errors from failing the
-// build and exiting the process.
-var watching = process.argv.length == 2 || process.argv[2] == 'default';
-
-// Config for htmlmin when processing templates
-var htmlMinOptions = {
-  collapseWhitespace: true,
-  conservativeCollapse: true,
-  removeComments: true,
-  collapseBooleanAttributes: true,
-  removeAttributeQuotes: true,
-  removeRedundantAttributes: true,
-  removeEmptyAttributes: true
-}
-
-// Compiles and bundles TypeScript to JavaScript
-function compile(source, destination) {
-  var plugins = [
-    typescript({
-      target: 'ES6',
-      module: 'es2015',
-      moduleResolution: 'node',
-      emitDecoratorMetadata: true,
-      experimentalDecorators: true,
-      noImplicitAny: true,
-      removeComments: true,
-      typescript: require('typescript')
-    }),
-    babel({
-      exclude: 'node_modules/**/*.js',
-      presets: [["es2015", { modules: false }]],
-      plugins: ["external-helpers"]
-    }),
-    commonjs({
-      include: 'node_modules/**'
-    }),
-    nodeResolve({
-      jsnext: true,
-      main: true,
-      browser: true,
-      extensions: ['.js', '.ts', '.json'],
-      preferBuiltins: false
-    })
-  ];
-
-  return rollup.rollup({
-    entry: source,
-    plugins: plugins,
-    sourceMap: true
-  }).then(bundle => {
-    return bundle.write({ dest: destination, sourceMap: true });
-  });
-}
-
-/**********************************************************************
- * Tasks to build the library
- */
-
-gulp.task('images', () => {
-  return gulp.src('src/**/*.svg')
-    .pipe(svgmin())
-    .pipe(templatecache({
-      filename: 'images.js',
-      module: config.moduleName,
-      transformUrl: url => config.moduleName + '/' + url
-    }))
-    .pipe(gulp.dest('build/'));
+build.init({
+  bundles: [{
+    name: 'lib',
+    root: 'src'
+  }, {
+    name: 'demo',
+    root: 'demo',
+    dependencies: ['lib']
+  }],
+  run: {
+    bundle: 'demo'
+  }
 });
 
-gulp.task('templates', (cb) => {
-  return gulp.src(['src/**/*.html'])
-    .pipe(htmlhint('.htmlhintrc'))
-    .pipe(watching ? htmlhint.reporter() : htmlhint.failReporter())
-    .pipe(htmlmin(htmlMinOptions))
-    .pipe(templatecache({
-      module: config.moduleName,
-      transformUrl: url => config.moduleName + '/' + url
-    }))
-    .pipe(gulp.dest('build/'));
-});
 
-gulp.task('styles', () => {
-  return gulp.src('src/styles.scss')
-    .pipe(inject(gulp.src('src/**/_*.scss'), {
-      starttag: '/* inject:imports */',
-      endtag: '/* endinject */',
-      transform: filepath => '@import ".' + filepath + '";'
-    }))
-    .pipe(gulp.dest('./'))
-})
+// var gulp = require('gulp');
+// var htmlhint = require('gulp-htmlhint');
+// var htmlmin = require('gulp-htmlmin');
+// var svgmin = require('gulp-svgmin');
+// var templatecache = require('gulp-angular-templatecache');
+// var watch = require('gulp-watch');
+// var sass = require('gulp-sass');
+// var sourcemaps = require('gulp-sourcemaps');
+// var browserSync = require('browser-sync');
+// var inject = require('gulp-inject');
 
-gulp.task('build', ['images', 'templates', 'styles']);
+// var karma = require('karma');
 
-gulp.task('default', ['build'], () => {
-  watch(['src/**/*.svg', 'src/**/*.html'], () => gulp.start('build'));
-});
+// var rollup = require('rollup');
+// var babel = require('rollup-plugin-babel');
+// var typescript = require('rollup-plugin-typescript');
+// var commonjs = require('rollup-plugin-commonjs');
+// var nodeResolve = require('rollup-plugin-node-resolve');
 
-gulp.task('lint', () => {
-  var tslint = require('gulp-tslint');
+// var config = require('./config.json');
 
-  return gulp.src(['src/**/*.ts', 'demo/**/*.ts'])
-    .pipe(tslint({
-      formattersDirectory: 'node_modules/custom-tslint-formatters/formatters',
-      formatter: 'grouped'
-    }))
-    .pipe(tslint.report({
-      summarizeFailureOutput: true
-    }));
-});
+// // set to true when the default task is running and we're watching
+// // for file changes. This is used to prevent errors from failing the
+// // build and exiting the process.
+// var watching = process.argv.length == 2 || process.argv[2] == 'default';
 
-gulp.task('clean', cb => {
-  var del = require('del');
-  del(['build/**/*', '.tmp/**/*'], cb);
-});
+// // Config for htmlmin when processing templates
+// var htmlMinOptions = {
+//   collapseWhitespace: true,
+//   conservativeCollapse: true,
+//   removeComments: true,
+//   collapseBooleanAttributes: true,
+//   removeAttributeQuotes: true,
+//   removeRedundantAttributes: true,
+//   removeEmptyAttributes: true
+// }
 
-/**********************************************************************
- * Tasks to build and run the demo
- */
+// // Compiles and bundles TypeScript to JavaScript
+// function compile(source, destination) {
+//   var plugins = [
+//     typescript({
+//       target: 'ES6',
+//       module: 'es2015',
+//       moduleResolution: 'node',
+//       emitDecoratorMetadata: true,
+//       experimentalDecorators: true,
+//       noImplicitAny: true,
+//       removeComments: true,
+//       typescript: require('typescript')
+//     }),
+//     babel({
+//       exclude: 'node_modules/**/*.js',
+//       presets: [["es2015", { modules: false }]],
+//       plugins: ["external-helpers"]
+//     }),
+//     commonjs({
+//       include: 'node_modules/**'
+//     }),
+//     nodeResolve({
+//       jsnext: true,
+//       main: true,
+//       browser: true,
+//       extensions: ['.js', '.ts', '.json'],
+//       preferBuiltins: false
+//     })
+//   ];
 
-gulp.task('demo:compile', ['build', 'demo:images', 'demo:templates'], () => {
-  return compile('demo/index.ts', '.tmp/demo/js/main.js');
-})
+//   return rollup.rollup({
+//     entry: source,
+//     plugins: plugins,
+//     sourceMap: true
+//   }).then(bundle => {
+//     return bundle.write({ dest: destination, sourceMap: true });
+//   });
+// }
 
-gulp.task('demo:styles', ['styles'], () => {
-  return gulp.src('demo/**/*.scss')
-    .pipe(sourcemaps.init())
-    .pipe(sass())
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest('.tmp/demo/css'));
-})
+// /**********************************************************************
+//  * Tasks to build the library
+//  */
 
-gulp.task('demo:templates', () => {
-  return gulp.src(['demo/**/*.html'])
-    .pipe(htmlhint('.htmlhintrc'))
-    .pipe(watching ? htmlhint.reporter() : htmlhint.failReporter())
-    .pipe(htmlmin(htmlMinOptions))
-    .pipe(templatecache({ module: 'demoApp' }))
-    .pipe(gulp.dest('.tmp/build'));
-})
+// gulp.task('images', () => {
+//   return gulp.src('src/**/*.svg')
+//     .pipe(svgmin())
+//     .pipe(templatecache({
+//       filename: 'images.js',
+//       module: config.moduleName,
+//       transformUrl: url => config.moduleName + '/' + url
+//     }))
+//     .pipe(gulp.dest('build/'));
+// });
 
-gulp.task('demo:images', () => {
-  return gulp.src('demo/**/*.svg')
-    .pipe(svgmin())
-    .pipe(templatecache({
-      filename: 'images.js',
-      module: 'demoApp'
-    }))
-    .pipe(gulp.dest('.tmp/build'));
-})
+// gulp.task('templates', (cb) => {
+//   return gulp.src(['src/**/*.html'])
+//     .pipe(htmlhint('.htmlhintrc'))
+//     .pipe(watching ? htmlhint.reporter() : htmlhint.failReporter())
+//     .pipe(htmlmin(htmlMinOptions))
+//     .pipe(templatecache({
+//       module: config.moduleName,
+//       transformUrl: url => config.moduleName + '/' + url
+//     }))
+//     .pipe(gulp.dest('build/'));
+// });
 
-gulp.task('demo:build', ['demo:compile', 'demo:styles'], () => {
-  return gulp.src('demo/index.html')
-    .pipe(gulp.dest('.tmp/demo'));
-})
+// gulp.task('styles', () => {
+//   return gulp.src('src/styles.scss')
+//     .pipe(inject(gulp.src('src/**/_*.scss'), {
+//       starttag: '/* inject:imports */',
+//       endtag: '/* endinject */',
+//       transform: filepath => '@import ".' + filepath + '";'
+//     }))
+//     .pipe(gulp.dest('./'))
+// })
 
-gulp.task('demo', ['demo:build'], () => {
-  var bs = browserSync.create();
+// gulp.task('build', ['images', 'templates', 'styles']);
 
-  watch(['src/**/*', 'demo/**/*'], () => {
-    gulp.start('demo:build');
-  });
+// gulp.task('default', ['build'], () => {
+//   watch(['src/**/*.svg', 'src/**/*.html'], () => gulp.start('build'));
+// });
 
-  bs.watch('.tmp/demo/**/*').on('change', bs.reload);
+// gulp.task('lint', () => {
+//   var tslint = require('gulp-tslint');
 
-  bs.init({
-    open: true,
-    reloadOnRestart: true,
-    server: {
-      baseDir: ['.tmp/demo']
-    }
-  });
-})
+//   return gulp.src(['src/**/*.ts', 'demo/**/*.ts'])
+//     .pipe(tslint({
+//       formattersDirectory: 'node_modules/custom-tslint-formatters/formatters',
+//       formatter: 'grouped'
+//     }))
+//     .pipe(tslint.report({
+//       summarizeFailureOutput: true
+//     }));
+// });
 
-/**********************************************************************
- * Tasks to build and run the tests
- */
+// gulp.task('clean', cb => {
+//   var del = require('del');
+//   del(['build/**/*', '.tmp/**/*'], cb);
+// });
 
-gulp.task('spec:inject', () => {
-  return gulp.src('src/spec.ts')
-    .pipe(inject(gulp.src('src/**/*.spec.ts'), {
-      starttag: '/* inject:specs */',
-      endtag: '/* endinject */',
-      transform: filepath => "import '.." + filepath + "';"
-    }))
-    .pipe(gulp.dest('.tmp/'));
-});
+// /**********************************************************************
+//  * Tasks to build and run the demo
+//  */
 
-gulp.task('spec:compile', ['spec:inject'], () => {
-  return compile('.tmp/spec.ts', '.tmp/spec.js');
-})
+// gulp.task('demo:compile', ['build', 'demo:images', 'demo:templates'], () => {
+//   return compile('demo/index.ts', '.tmp/demo/js/main.js');
+// })
 
-gulp.task('spec', ['lint', 'demo:build', 'spec:compile'], (cb) => {
-  var path = require('path');
-  new karma.Server(
-    { configFile: path.resolve('karma.conf.js') },
-    exitCode => {
-      console.log('exit code', exitCode)
-      if (exitCode != 0) {
-        process.exit(1);
-      }
-      cb();
-    }).start();
-});
+// gulp.task('demo:styles', ['styles'], () => {
+//   return gulp.src('demo/**/*.scss')
+//     .pipe(sourcemaps.init())
+//     .pipe(sass())
+//     .pipe(sourcemaps.write())
+//     .pipe(gulp.dest('.tmp/demo/css'));
+// })
 
-gulp.task('spec:debug', ['spec:compile'], () => {
-  var path = require('path');
-  new karma.Server(
-    {
-      configFile: path.resolve('karma.conf.js'),
-      browsers: ['Chrome'],
-      singleRun: false
-    }).start();
-});
+// gulp.task('demo:templates', () => {
+//   return gulp.src(['demo/**/*.html'])
+//     .pipe(htmlhint('.htmlhintrc'))
+//     .pipe(watching ? htmlhint.reporter() : htmlhint.failReporter())
+//     .pipe(htmlmin(htmlMinOptions))
+//     .pipe(templatecache({ module: 'demoApp' }))
+//     .pipe(gulp.dest('.tmp/build'));
+// })
+
+// gulp.task('demo:images', () => {
+//   return gulp.src('demo/**/*.svg')
+//     .pipe(svgmin())
+//     .pipe(templatecache({
+//       filename: 'images.js',
+//       module: 'demoApp'
+//     }))
+//     .pipe(gulp.dest('.tmp/build'));
+// })
+
+// gulp.task('demo:build', ['demo:compile', 'demo:styles'], () => {
+//   return gulp.src('demo/index.html')
+//     .pipe(gulp.dest('.tmp/demo'));
+// })
+
+// gulp.task('demo', ['demo:build'], () => {
+//   var bs = browserSync.create();
+
+//   watch(['src/**/*', 'demo/**/*'], () => {
+//     gulp.start('demo:build');
+//   });
+
+//   bs.watch('.tmp/demo/**/*').on('change', bs.reload);
+
+//   bs.init({
+//     open: true,
+//     reloadOnRestart: true,
+//     server: {
+//       baseDir: ['.tmp/demo']
+//     }
+//   });
+// })
+
+// /**********************************************************************
+//  * Tasks to build and run the tests
+//  */
+
+// gulp.task('spec:inject', () => {
+//   return gulp.src('src/spec.ts')
+//     .pipe(inject(gulp.src('src/**/*.spec.ts'), {
+//       starttag: '/* inject:specs */',
+//       endtag: '/* endinject */',
+//       transform: filepath => "import '.." + filepath + "';"
+//     }))
+//     .pipe(gulp.dest('.tmp/'));
+// });
+
+// gulp.task('spec:compile', ['spec:inject'], () => {
+//   return compile('.tmp/spec.ts', '.tmp/spec.js');
+// })
+
+// gulp.task('spec', ['lint', 'demo:build', 'spec:compile'], (cb) => {
+//   var path = require('path');
+//   new karma.Server(
+//     { configFile: path.resolve('karma.conf.js') },
+//     exitCode => {
+//       console.log('exit code', exitCode)
+//       if (exitCode != 0) {
+//         process.exit(1);
+//       }
+//       cb();
+//     }).start();
+// });
+
+// gulp.task('spec:debug', ['spec:compile'], () => {
+//   var path = require('path');
+//   new karma.Server(
+//     {
+//       configFile: path.resolve('karma.conf.js'),
+//       browsers: ['Chrome'],
+//       singleRun: false
+//     }).start();
+// });

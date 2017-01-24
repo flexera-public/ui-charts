@@ -1,6 +1,6 @@
-import lib from '../lib';
-import * as Data from '../dataProvider/dataProvider.service';
 import _ from 'lodash';
+import * as Data from '../dataProvider/dataProvider.service';
+import lib from '../lib';
 
 interface SubscriptionData {
   live?: boolean;
@@ -80,7 +80,7 @@ export class Chart {
    */
   forceRefresh(from: number, span: number) {
     this.details = [];
-    let promises: ng.IPromise<any>[] = [];
+    let promises: Array<ng.IPromise<any>> = [];
 
     this.enumMetrics(m => {
       promises.push(this.graphData

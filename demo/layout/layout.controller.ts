@@ -1,6 +1,6 @@
 import app from '../app';
 
-@app.controller
+@app.inject('$state').controller
 export default class LayoutController {
 
   states: ng.ui.IState[];

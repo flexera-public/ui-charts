@@ -1,11 +1,11 @@
-import lib from '../lib';
 import _ from 'lodash';
+import lib from '../lib';
 
 type CallbackInfo = {
   span: number
   from: number
   callback: MetricCallback
-}
+};
 
 type Subscription = {
   callbacks: CallbackInfo[]
@@ -13,27 +13,27 @@ type Subscription = {
   metric: MetricInfo
   provider: MetricsProvider
   latestData?: SeriesPoints
-}
+};
 
 /**
  * Represents a function that handles data returned by a provider
  */
-export type MetricCallback = (data: SeriesData) => void
+export type MetricCallback = (data: SeriesData) => void;
 
 /**
  * A single point of data
  */
-export type PointData = { min: number, avg: number, max: number } | number
+export type PointData = { min: number, avg: number, max: number } | number;
 
 /**
  * Array of point data
  */
-export type Points = {
+export type Points = Array<{
   timestamp: number
   data: PointData
-}[]
+}>;
 
-export type SeriesPoints = { [seriesName: string]: Points }
+export type SeriesPoints = { [seriesName: string]: Points };
 
 export interface SeriesData {
   readonly error?: string;
@@ -95,7 +95,7 @@ export interface Metric extends MetricInfo {
 export class GraphData {
 
   private providers: MetricsProvider[] = [];
-  private allMetrics: { metric: Metric, provider: MetricsProvider }[] = [];
+  private allMetrics: Array<{ metric: Metric, provider: MetricsProvider }> = [];
 
   private subscriptions: _.Dictionary<Subscription> = {};
 
@@ -120,7 +120,7 @@ export class GraphData {
             id: `${provider.name}#${metric.category}#${metric.name}`,
             providerName: provider.name
           }),
-          provider: provider
+          provider
         });
       });
     });
@@ -163,9 +163,9 @@ export class GraphData {
     if (!subscription) {
       subscription = {
         callbacks: [{
-          from: from,
-          span: span,
-          callback: callback
+          from,
+          span,
+          callback
         }],
         span: 0,
         metric: metric.metric,
@@ -180,9 +180,9 @@ export class GraphData {
       }
 
       let c = {
-        span: span,
-        from: from,
-        callback: callback
+        span,
+        from,
+        callback
       };
 
       subscription.callbacks.push(c);
@@ -277,6 +277,6 @@ export class GraphData {
       points[k] = _.filter(v, p => p.timestamp <= from && p.timestamp >= to);
     });
 
-    callback.callback({ points: points });
+    callback.callback({ points });
   }
 }
